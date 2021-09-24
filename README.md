@@ -1,4 +1,7 @@
 # SoundOff
 
-## Schema
-Link: https://docs.google.com/document/d/1SnDSrpcFClJ1JvQF8UrtUX8899WyC0yvTtI_RK-G5I0/edit?usp=sharing
+## Relational Table Schema
+
+![image](https://user-images.githubusercontent.com/70610258/134602014-21681a4c-a0c7-4b97-9338-64b3c3d03a1a.png)
+
+
