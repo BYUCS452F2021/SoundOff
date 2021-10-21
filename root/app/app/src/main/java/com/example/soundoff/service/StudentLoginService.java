@@ -5,6 +5,9 @@ import com.example.soundoff.service.request.StudentLoginRequest;
 import com.example.soundoff.service.response.StudentLoginResponse;
 
 public class StudentLoginService {
+    public StudentLoginService() {
+    }
+
     public StudentLoginResponse loginStudent(StudentLoginRequest request) {
         StudentLoginResponse response = getServerFacade().loginStudent(request);
 
