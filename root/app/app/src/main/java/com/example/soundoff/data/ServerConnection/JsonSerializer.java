@@ -1,4 +1,4 @@
-package com.example.soundoff.data.model;
+package com.example.soundoff.data.ServerConnection;
 
 import com.google.gson.Gson;
 

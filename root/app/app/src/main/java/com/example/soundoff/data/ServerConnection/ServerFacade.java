@@ -1,4 +1,4 @@
-package com.example.soundoff.data.model;
+package com.example.soundoff.data.ServerConnection;
 
 //import android.os.Build;
 
@@ -16,9 +16,10 @@ import java.util.Map;
 //@RequiresApi(api = Build.VERSION_CODES.O)
 public class ServerFacade {
 
-//    private static final String SERVER_URL = "https://1cqnpkx9qe.execute-api.us-east-1.amazonaws.com/dev";
-//
-//    private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
+    private static final String SERVER_URL = "https://1cqnpkx9qe.execute-api.us-east-1.amazonaws.com/dev"; //TODO: UPDATE URL
+
+    private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
+
 //    // This is the hard coded followee data returned by the 'getFollowees()' method
 ////    private static final String MALE_IMAGE_URL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
 ////    private static final String FEMALE_IMAGE_URL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png";
@@ -47,43 +48,43 @@ public class ServerFacade {
 ////    private DummyServer dummyServer;
 //        private Map<String, String> headers;
 //
-//    public ServerFacade(){
-////        dummyServer = DummyServer.getInstance();
+    public ServerFacade(){
+//        dummyServer = DummyServer.getInstance();
 //        headers = new HashMap<>();
 //        headers.put("Authorization", "fakeAuthToken");
-//    }
-//    /**
-//     * Performs a login and if successful, returns the logged in user and an auth token. The current
-//     * implementation is hard-coded to return a dummy user and doesn't actually make a network
-//     * request.
-//     *
-//     * @param request contains all information needed to perform a login.
-//     * @return the login response.
-//     */
-//    public LoginResponse login(LoginRequest request) throws IOException, TweeterRemoteException{
-//        System.out.print("I am attempting to login");
-//        //get user with this username and password.
-//
-//        // login with the user's info
-////        User user = dummyServer.getUserInfo(request.getUsername(), request.getPassword());
-//        LoginResponse response = clientCommunicator.doPost("/login",request,null,LoginResponse.class);
-////        if (user != null) {
-////            return new LoginResponse(user, new AuthToken());
-////        } else {
-////            return new LoginResponse("Invalid Login");
-////        }
-//        if(response.isSuccess()) {
-//            return response;
+    }
+    /**
+     * Performs a login and if successful, returns the logged in user and an auth token. The current
+     * implementation is hard-coded to return a dummy user and doesn't actually make a network
+     * request.
+     *
+     * @param request contains all information needed to perform a login.
+     * @return the login response.
+     */
+    public LoginResponse login(LoginRequest request) throws IOException, TweeterRemoteException{
+        System.out.print("I am attempting to login");
+        //get user with this username and password.
+
+        // login with the user's info
+//        User user = dummyServer.getUserInfo(request.getUsername(), request.getPassword());
+        LoginResponse response = clientCommunicator.doPost("/login",request,null,LoginResponse.class);
+//        if (user != null) {
+//            return new LoginResponse(user, new AuthToken());
+//        } else {
+//            return new LoginResponse("Invalid Login");
 //        }
-//        else {
-//            ///TODO: Maybe throw runtime exception?
-//            //@throw new RuntimeException(response.getMessage());
-//            return new LoginResponse(response.getMessage());
-////            User user = new User("Allen", "Anderson","@user1",
-////                    "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
-////            return new LoginResponse(user, new AuthToken());
-//        }
-//    }
+        if(response.isSuccess()) {
+            return response;
+        }
+        else {
+            ///TODO: Maybe throw runtime exception?
+            //@throw new RuntimeException(response.getMessage());
+            return new LoginResponse(response.getMessage());
+//            User user = new User("Allen", "Anderson","@user1",
+//                    "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
+//            return new LoginResponse(user, new AuthToken());
+        }
+    }
 //
 //    /**
 //     * Performs a register and if successful, returns the logged in user and an auth token. The current

@@ -1,4 +1,6 @@
-package com.example.soundoff.data.model;
+package com.example.soundoff.data.ServerConnection;
+
+import com.example.soundoff.data.ServerConnection.JsonSerializer;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
