@@ -5,6 +5,8 @@ import com.example.soundoff.service.AttendanceService;
 import com.example.soundoff.service.request.AttendanceRequest;
 import com.example.soundoff.service.response.AttendanceResponse;
 
+import java.io.IOException;
+
 public class AttendancePresenter {
     private final AttendancePresenter.View view;
 
@@ -16,7 +18,7 @@ public class AttendancePresenter {
         this.view = view;
     }
 
-    public AttendanceResponse connect(AttendanceRequest request){
+    public AttendanceResponse recordAttendance(AttendanceRequest request) throws IOException {
         AttendanceService service = new AttendanceService();
         return service.recordAttendance(request);
     }

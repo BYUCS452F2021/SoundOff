@@ -5,6 +5,8 @@ import com.example.soundoff.service.ClassService;
 import com.example.soundoff.service.request.ClassRequest;
 import com.example.soundoff.service.response.ClassResponse;
 
+import java.io.IOException;
+
 public class ClassPresenter {
     private final ClassPresenter.View view;
 
@@ -16,7 +18,7 @@ public class ClassPresenter {
         this.view = view;
     }
 
-    public ClassResponse connect(ClassRequest request){
+    public ClassResponse addClass(ClassRequest request) throws IOException {
         ClassService service = new ClassService();
         return service.addClass(request);
     }

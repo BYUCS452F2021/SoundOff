@@ -4,6 +4,8 @@ import com.example.soundoff.service.StudentsService;
 import com.example.soundoff.service.request.StudentsRequest;
 import com.example.soundoff.service.response.StudentsResponse;
 
+import java.io.IOException;
+
 
 public class StudentsPresenter {
     private final StudentsPresenter.View view;
@@ -16,7 +18,7 @@ public class StudentsPresenter {
         this.view = view;
     }
 
-    public StudentsResponse listStudents(StudentsRequest request){
+    public StudentsResponse listStudents(StudentsRequest request) throws IOException {
         StudentsService service = new StudentsService();
         return service.listStudents(request);
     }

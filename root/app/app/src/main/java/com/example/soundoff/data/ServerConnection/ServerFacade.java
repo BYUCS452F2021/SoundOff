@@ -5,6 +5,8 @@ package com.example.soundoff.data.ServerConnection;
 import com.example.soundoff.service.request.*;
 import com.example.soundoff.service.response.*;
 
+import java.io.IOException;
+
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -51,44 +53,44 @@ public class ServerFacade {
 //        headers.put("Authorization", "fakeAuthToken");
     }
 
-    public AttendanceResponse recordAttendance(AttendanceRequest request){
-        return new AttendanceResponse();
+    public AttendanceResponse recordAttendance(AttendanceRequest request) throws IOException {
+        return new AttendanceResponse("message");
     }
 
-    public ClassResponse addClass(ClassRequest request){
-        return new ClassResponse();
+    public ClassResponse addClass(ClassRequest request) throws IOException {
+        return new ClassResponse("message");
     }
 
-    public CodeResponse attendanceCode(CodeRequest request){
-        return new CodeResponse();
+    public CodeResponse attendanceCode(CodeRequest request) throws IOException {
+        return new CodeResponse("message");
     }
 
-    public EnrollmentResponse enroll(EnrollmentRequest request){
-        return new EnrollmentResponse();
+    public EnrollmentResponse enroll(EnrollmentRequest request) throws IOException {
+        return new EnrollmentResponse("message");
     }
 
-    public StudentAttendanceResponse recordAttendance(StudentAttendanceRequest request){
-        return new StudentAttendanceResponse();
+    public StudentAttendanceResponse recordAttendance(StudentAttendanceRequest request) throws IOException {
+        return new StudentAttendanceResponse("message");
     }
 
-    public StudentLoginResponse loginStudent(StudentLoginRequest request){
-        return new StudentLoginResponse();
+    public StudentLoginResponse loginStudent(StudentLoginRequest request) throws IOException {
+        return new StudentLoginResponse("message");
     }
 
-    public StudentRegisterResponse registerStudent(StudentRegisterRequest request){
-        return new StudentRegisterResponse();
+    public StudentRegisterResponse registerStudent(StudentRegisterRequest request) throws IOException {
+        return new StudentRegisterResponse("message");
     }
 
-    public StudentsResponse listStudents(StudentsRequest request){
-        return new StudentsResponse();
+    public StudentsResponse listStudents(StudentsRequest request) throws IOException {
+        return new StudentsResponse("message");
     }
 
-    public TeacherLoginResponse loginTeacher(TeacherLoginRequest request){
-        return new TeacherLoginResponse();
+    public TeacherLoginResponse loginTeacher(TeacherLoginRequest request) throws IOException {
+        return new TeacherLoginResponse("message");
     }
 
-    public TeacherRegisterResponse registerTeacher(TeacherRegisterRequest request){
-        return new TeacherRegisterResponse();
+    public TeacherRegisterResponse registerTeacher(TeacherRegisterRequest request) throws IOException {
+        return new TeacherRegisterResponse("message");
     }
 
 

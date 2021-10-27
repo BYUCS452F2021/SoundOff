@@ -4,6 +4,8 @@ import com.example.soundoff.service.CodeService;
 import com.example.soundoff.service.request.CodeRequest;
 import com.example.soundoff.service.response.CodeResponse;
 
+import java.io.IOException;
+
 public class CodePresenter {
     private final CodePresenter.View view;
 
@@ -15,7 +17,7 @@ public class CodePresenter {
         this.view = view;
     }
 
-    public CodeResponse attendanceCode(CodeRequest request){
+    public CodeResponse attendanceCode(CodeRequest request) throws IOException {
         CodeService service = new CodeService();
         return service.attendanceCode(request);
     }
