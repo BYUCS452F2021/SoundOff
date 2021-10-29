@@ -1,0 +1,4 @@
+#Tue Oct 26 18:30:35 MDT 2021
+base.0=/Users/samantha/Desktop/CS452/SOUNDOFF/SoundOff/root/app/app/build/intermediates/dex/debug/mergeDexDebug/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
