@@ -226,6 +226,8 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+// TODO: Create a get all students endpoint for adding students to a class
+
 module.exports = {
     routes: router,
     model: User,
