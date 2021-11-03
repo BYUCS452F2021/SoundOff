@@ -24,9 +24,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.soundoff.R;
+//import com.example.familymap.R;
+
 import com.example.soundoff.data.model.Professor;
 import com.example.soundoff.data.model.Student;
 import com.example.soundoff.presenter.StudentLoginPresenter;
+import com.example.soundoff.presenter.StudentRegisterPresenter;
+import com.example.soundoff.service.request.StudentLoginRequest;
+import com.example.soundoff.service.request.StudentRegisterRequest;
+import com.example.soundoff.service.response.StudentLoginResponse;
+import com.example.soundoff.view.asyncTasks.StudentLoginTask;
+import com.example.soundoff.view.asyncTasks.StudentRegisterTask;
 
 import java.io.ByteArrayOutputStream;
 
@@ -47,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private Toast loginInToast;
 
     private StudentLoginPresenter presenter;
+    private StudentRegisterPresenter rPresenter;
 
     private EditText emailEdit;
     private EditText passwordEdit;
@@ -72,9 +82,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.soundoff_login);
-
-        presenter = new StudentLoginPresenter(this);
+        setContentView(R.layout.activity_login);
+//
+//        presenter = new StudentLoginPresenter(this);
+//        rPresenter = new StudentRegisterPresenter(this);
 
 
 
@@ -93,34 +104,34 @@ public class LoginActivity extends AppCompatActivity {
         teacherRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUser(True);
+//                setUser(True);
             }
         });
-
+//
         studentRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setUser(False);
+//                setUser(False);
             }
         });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-
-
-            @Override
-            public void onClick(View view) {
-                Login(view);
-            }
-        });
-
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-
-
-            @Override
-            public void onClick(View view) {
-                Register(view);
-            }
-        });
+//
+//        loginButton.setOnClickListener(new View.OnClickListener() {
+//
+//
+//            @Override
+//            public void onClick(View view) {
+//                Login(view);
+//            }
+//        });
+//
+//        signUpButton.setOnClickListener(new View.OnClickListener() {
+//
+//
+//            @Override
+//            public void onClick(View view) {
+//                Register(view);
+//            }
+//        });
 
 
     }
@@ -135,13 +146,13 @@ public class LoginActivity extends AppCompatActivity {
         loginInToast = Toast.makeText(LoginActivity.this, "Logging In", Toast.LENGTH_LONG);
         loginInToast.show();
 
-        private String email;
-        private String password;
-        private String name;
-        private String major;
-        private String phone;
-        private String degree;
-        private Boolean isTeacher;
+//        private String email;
+//        private String password;
+//        private String name;
+//        private String major;
+//        private String phone;
+//        private String degree;
+//        private Boolean isTeacher;
 
         email = emailEdit.getText().toString();
 
@@ -150,9 +161,9 @@ public class LoginActivity extends AppCompatActivity {
         //check to make sure nothing is left blank
         if (email != "" && password != "") {
             // It doesn't matter what values we put here. We will be logged in with a hard-coded dummy user.
-            LoginRequest loginRequest = new LoginRequest(email, password);
-            LoginTask loginTask = new LoginTask(presenter, Soundoff_Login.this);
-            loginTask.execute(loginRequest);
+            StudentLoginRequest loginRequest = new StudentLoginRequest();//email, password);
+//            StudentLoginTask loginTask = new StudentLoginTask(presenter, LoginActivity.this);
+//            loginTask.execute(loginRequest);
         }
 
 
@@ -168,21 +179,21 @@ public class LoginActivity extends AppCompatActivity {
         loginInToast = Toast.makeText(LoginActivity.this, "Registering User", Toast.LENGTH_LONG);
         loginInToast.show();
 
-        firstName = firstNameEdit.getText().toString();
+//        firstName = firstNameEdit.getText().toString();
+//
+//        lastName = lastNameEdit.getText().toString();
+//
+//        username = "@" + userNameEdit.getText().toString();
+//
+//        password = passwordEdit.getText().toString();
 
-        lastName = lastNameEdit.getText().toString();
 
-        username = "@" + userNameEdit.getText().toString();
-
-        password = passwordEdit.getText().toString();
-
-
-        if (firstName != "" && lastName != "" && username != "" && password != "" && currentPhoto != null) {
-            // It doesn't matter what values we put here. We will be logged in with a hard-coded dummy user.
-            RegisterRequest registerRequest = new RegisterRequest(firstName, lastName, username, password, currentPhoto);
-            RegisterTask registerTask = new RegisterTask(presenter, LoginActivity.this);
-            registerTask.execute(registerRequest);
-        }
+//        if (firstName != "" && lastName != "" && username != "" && password != "" && currentPhoto != null) {
+//            // It doesn't matter what values we put here. We will be logged in with a hard-coded dummy user.
+//            StudentRegisterRequest registerRequest = new StudentRegisterRequest();//firstName, lastName, username, password, currentPhoto);
+//            StudentRegisterTask registerTask = new StudentRegisterTask(rPresenter, LoginActivity.this);
+//            registerTask.execute(registerRequest);
+//        }
 
 
     }
@@ -191,69 +202,71 @@ public class LoginActivity extends AppCompatActivity {
         this.isTeacher = isTeacher;
     }
 
-    private void TakePhoto() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            loginInToast = Toast.makeText(LoginActivity.this, "Unable to Open Camera", Toast.LENGTH_LONG);
-            loginInToast.show();
-        }
-    }
+//    private void TakePhoto() {
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        try {
+//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+//        } catch (ActivityNotFoundException e) {
+//            loginInToast = Toast.makeText(LoginActivity.this, "Unable to Open Camera", Toast.LENGTH_LONG);
+//            loginInToast.show();
+//        }
+//    }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            currentPhoto = stream.toByteArray();
-            imageBitmap.recycle();
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//            currentPhoto = stream.toByteArray();
+//            imageBitmap.recycle();
+//        }
+//    }
 
 
-    /**
-     * The callback method that gets invoked for a successful login. Displays the MainActivity.
-     *
-     * @param loginResponse the response from the login request.
-     */
-    @Override
-    public void loginSuccessful(LoginResponse loginResponse) {
-        Intent intent = new Intent(this, MainActivity.class);
-
-        // todo fix add intent stuff
-
-        loginInToast.cancel();
-        startActivity(intent);
-    }
-
-    /**
-     * The callback method that gets invoked for an unsuccessful login. Displays a toast with a
-     * message indicating why the login failed.
-     *
-     * @param loginResponse the response from the login request.
-     */
-    @Override
-    public void loginUnsuccessful(LoginResponse loginResponse) {
-        Toast.makeText(this, "Failed to login. " + loginResponse.getMessage(), Toast.LENGTH_LONG).show();
-    }
-
-    /**
-     * A callback indicating that an exception was thrown in an asynchronous method called on the
-     * presenter.
-     *
-     * @param exception the exception.
-     */
-    @Override
-    public void handleException(Exception exception) {
-        Log.e(LOG_TAG, exception.getMessage(), exception);
-        Toast.makeText(this, "Failed to login because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
-    }
+//    /**
+//     * The callback method that gets invoked for a successful login. Displays the MainActivity.
+//     *
+//     * @param loginResponse the response from the login request.
+//     */
+//    @Override
+//    public void loginSuccessful(StudentLoginResponse loginResponse) {
+//        Intent intent = new Intent(this, LoginActivity.class);
+//
+//        // todo fix add intent stuff
+//
+//        loginInToast.cancel();
+//        startActivity(intent);
+//    }
+//
+//    /**
+//     * The callback method that gets invoked for an unsuccessful login. Displays a toast with a
+//     * message indicating why the login failed.
+//     *
+//     * @param loginResponse the response from the login request.
+//     */
+//    @Override
+//    public void loginUnsuccessful(StudentLoginResponse loginResponse) {
+//        Toast.makeText(this, "Failed to login. " + loginResponse.getMessage(), Toast.LENGTH_LONG).show();
+//    }
+//
+//    /**
+//     * A callback indicating that an exception was thrown in an asynchronous method called on the
+//     * presenter.
+//     *
+//     * @param exception the exception.
+//     */
+//    @Override
+//    public void handleException(Exception exception) {
+//        Log.e(LOG_TAG, exception.getMessage(), exception);
+//        Toast.makeText(this, "Failed to login because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+//    }
 }
+
+
 
 
 
