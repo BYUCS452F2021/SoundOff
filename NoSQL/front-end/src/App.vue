@@ -30,7 +30,7 @@ export default {
         console.log("Logout: " + (Date.now()-time)/1000);
       } catch (error) {
         this.$root.$data.user = null;
-        console.log("Logout Failure")
+        console.log("Logout Failure" + error);
       }
     },
   },

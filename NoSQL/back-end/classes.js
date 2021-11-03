@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require('mongoose');
+// Get other collections for the N:M relationship
 const users = require("./users.js");
 
 const router = express.Router();
@@ -56,18 +57,32 @@ router.post('/', async (req, res) => {
                 message: "class already exists"
             });
 
+        let user = await users.User.findOne({
+            _id: req.body.professor.id
+        }).populate('user');
+
         // create a new class and save it to the database
         const newClass = new Class({
             name: req.body.name,
-            //professor: , TODO: Call user api for object with professor id, assign professor object to class
+            professor: user,
             created: Date.now(),
         });
 
         await newClass.save();
-        // TODO: Update the professor classes list to include the saved class
 
-        // send back a 200 OK response (front end will need to refresh the professor)
-        res.sendStatus(200);
+        // Update the professor classes list to include the saved class
+        let createdClass = await Class.findOne( {
+            name: req.body.name
+        }).populate('class');
+        user.classes.push({
+            name: createdClass.name,
+        })
+        await user.save();
+
+        // send back a 200 OK response, along with the user that was created
+        return res.send({
+            user: user
+        });
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);

@@ -15,6 +15,8 @@
 
 <script>
 
+import axios from "axios";
+
 export default {
   name: "Classes",
   data() {
@@ -26,10 +28,19 @@ export default {
   methods: {
     async addClass() {
       try {
+        let className = prompt("Please enter your class name", "Fake Class 101 - Section 003");
+        if (className === null || className === "" || className === "Fake Class 101 - Section 003" || this.type !== 'professor') {
+          return;
+        }
         let time = Date.now();
+        let response = await axios.post('/api/classes/post', {
+          name: className,
+          professor: this.$root.$data.user,
+        });
+        this.$root.$data.user = response.data.user;
         console.log("Add Class: " + (Date.now()-time)/1000);
       } catch (error) {
-        console.log("Add Class Failure");
+        console.log("Add Class Failure" + error);
       }
     },
   }

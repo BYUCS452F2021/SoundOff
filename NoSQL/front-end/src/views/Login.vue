@@ -76,7 +76,7 @@ export default {
       } catch (error) {
         this.error = error.response.data.message;
         this.$root.$data.user = null;
-        console.log("Registration Failure");
+        console.log("Registration Failure" + error);
       }
     },
     async login() {
@@ -96,7 +96,7 @@ export default {
       } catch (error) {
         this.errorLogin = "Error: " + error.response.data.message;
         this.$root.$data.user = null;
-        console.log("Login Failure");
+        console.log("Login Failure" + error);
       }
     },
   }
