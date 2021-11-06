@@ -57,8 +57,8 @@ router.post('/', async (req, res) => {
                 message: "class already exists"
             });
 
-        let user = await users.User.findOne({
-            _id: req.body.professor.id
+        let user = await users.model.findOne({
+            _id: req.body.professor._id
         }).populate('user');
 
         // create a new class and save it to the database
@@ -76,6 +76,7 @@ router.post('/', async (req, res) => {
         }).populate('class');
         user.classes.push({
             name: createdClass.name,
+            id: createdClass._id,
         })
         await user.save();
 
@@ -88,3 +89,8 @@ router.post('/', async (req, res) => {
         return res.sendStatus(500);
     }
 });
+
+module.exports = {
+    routes: router,
+    model: Class,
+};

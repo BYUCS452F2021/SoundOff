@@ -33,7 +33,8 @@ export default {
           return;
         }
         let time = Date.now();
-        let response = await axios.post('/api/classes/post', {
+        console.log(this.$root.$data.user);
+        let response = await axios.post('/api/classes/', {
           name: className,
           professor: this.$root.$data.user,
         });
