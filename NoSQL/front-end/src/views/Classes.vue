@@ -4,8 +4,14 @@
       <h1>Classes</h1>
     </div>
     <div class="classList">
-      <p v-if="classes.length>0">class</p>
-      <p v-else>No Classes</p>
+      <div v-if="classes.length>0">
+        <div v-for="item in classes" v-bind:key="item._id" v-on:click="getClass" class="classBox">
+          <p>{{item.name}}</p>
+        </div>
+      </div>
+      <div v-else>
+        <p>No Classes</p>
+      </div>
     </div>
     <div v-if="type==='professor'" class="addClass">
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="addClass">Add Class</button>
@@ -44,6 +50,15 @@ export default {
         console.log("Add Class Failure" + error);
       }
     },
+    async getClass() {
+      try {
+        let time = Date.now();
+        // TODO: add get class function.
+        console.log("Get Class: " + (Date.now()-time)/1000);
+      } catch (error) {
+        console.log("Get Class Failure" + error);
+      }
+    },
   }
 }
 </script>
@@ -52,5 +67,27 @@ export default {
 .title, .classList{
   text-align: center;
   padding-top: 30px;
+}
+.addClass {
+  align-content: center;
+  text-align: center;
+}
+.classList {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  max-width: 500px;
+  flex-direction: column;
+}
+.classBox {
+  background-color: #d9534f;
+  width: 80%;
+  max-width: 300px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
 }
 </style>
