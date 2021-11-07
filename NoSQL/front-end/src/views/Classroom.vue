@@ -5,7 +5,7 @@
       <h1>{{classroom.name}}</h1>
     </div>
     <div class="studentList">
-      <div v-if="students.length>0" class="studentList">
+      <div v-if="students.length>0 && type==='professor'" class="studentList">
         <div v-for="item in students" v-bind:key="item.id" v-on:click="getStudents(item.id)" class="studentBox">
           <p>{{item.name}}</p>
         </div>
