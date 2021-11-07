@@ -4,8 +4,8 @@
       <h1>Classes</h1>
     </div>
     <div class="classList">
-      <div v-if="classes.length>0">
-        <div v-for="item in classes" v-bind:key="item._id" v-on:click="getClass" class="classBox">
+      <div v-if="classes.length>0" class="classList">
+        <div v-for="item in classes" v-bind:key="item.id" v-on:click="getClass(item.id)" class="classBox">
           <p>{{item.name}}</p>
         </div>
       </div>
@@ -50,13 +50,18 @@ export default {
         console.log("Add Class Failure" + error);
       }
     },
-    async getClass() {
+    async getClass(classID) {
       try {
         let time = Date.now();
-        // TODO: add get class function.
+        console.log(classID);
+        let response = await axios.post('/api/classes/class', {
+          classId: classID,
+        });
+        this.$root.$data.currentClass = response.data.queriedClass;
         console.log("Get Class: " + (Date.now()-time)/1000);
+        await this.$router.push({path: 'classroom'});
       } catch (error) {
-        console.log("Get Class Failure" + error);
+        console.log("Get Class Failure" + error.message);
       }
     },
   }
@@ -74,20 +79,27 @@ export default {
 }
 .classList {
   display: flex;
-  align-content: center;
+  align-content: space-around;
   align-items: center;
-  justify-content: center;
-  width: 90%;
-  max-width: 500px;
+  justify-content: space-around;
+  width: 100%;
   flex-direction: column;
+  padding: 10px;
 }
 .classBox {
   background-color: #d9534f;
   width: 80%;
-  max-width: 300px;
+  max-width: 500px;
   display: flex;
   align-content: center;
   justify-content: center;
   flex-direction: column;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+}
+.classBox:hover {
+  transform: scale(1.1);
+  transition-duration: 100ms;
 }
 </style>
