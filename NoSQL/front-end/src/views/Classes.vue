@@ -4,8 +4,14 @@
       <h1>Classes</h1>
     </div>
     <div class="classList">
-      <p v-if="classes.length>0">class</p>
-      <p v-else>No Classes</p>
+      <div v-if="classes.length>0" class="classList">
+        <div v-for="item in classes" v-bind:key="item.id" v-on:click="getClass(item.id)" class="classBox">
+          <p>{{item.name}}</p>
+        </div>
+      </div>
+      <div v-else>
+        <p>No Classes</p>
+      </div>
     </div>
     <div v-if="type==='professor'" class="addClass">
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="addClass">Add Class</button>
@@ -44,6 +50,20 @@ export default {
         console.log("Add Class Failure" + error);
       }
     },
+    async getClass(classID) {
+      try {
+        let time = Date.now();
+        console.log(classID);
+        let response = await axios.post('/api/classes/class', {
+          classId: classID,
+        });
+        this.$root.$data.currentClass = response.data.queriedClass;
+        console.log("Get Class: " + (Date.now()-time)/1000);
+        await this.$router.push({path: 'classroom'});
+      } catch (error) {
+        console.log("Get Class Failure" + error.message);
+      }
+    },
   }
 }
 </script>
@@ -52,5 +72,34 @@ export default {
 .title, .classList{
   text-align: center;
   padding-top: 30px;
+}
+.addClass {
+  align-content: center;
+  text-align: center;
+}
+.classList {
+  display: flex;
+  align-content: space-around;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  flex-direction: column;
+  padding: 10px;
+}
+.classBox {
+  background-color: #d9534f;
+  width: 80%;
+  max-width: 500px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+}
+.classBox:hover {
+  transform: scale(1.1);
+  transition-duration: 100ms;
 }
 </style>

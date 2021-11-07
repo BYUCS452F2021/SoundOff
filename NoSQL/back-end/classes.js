@@ -90,6 +90,33 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.post('/class', async (req, res) => {
+    if (!req.body.classId)
+        return res.status(400).send({
+            message: "Class id is required"
+        });
+    try {
+
+        const existingClass = await Class.findOne({
+            _id: req.body.classId
+        });
+
+        if (!existingClass)
+            return res.status(403).send({
+                message: "Class not found"
+            });
+
+        // send back a 200 OK response, along with the class that was found
+        return res.send({
+            queriedClass: existingClass
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+});
+
 module.exports = {
     routes: router,
     model: Class,
