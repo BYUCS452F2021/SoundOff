@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    classes: [],
+    classes: [], //list of class ids
 });
 
 // This is a hook that will be called before a user record is saved,
@@ -174,7 +174,7 @@ router.post('/login', async (req, res) => {
         // leak any information about which users exist.
         if (!await user.comparePassword(req.body.password))
             return res.status(403).send({
-                message: "username or password is wrong"
+                message: "email or password is wrong"
             });
 
         // set user session info
