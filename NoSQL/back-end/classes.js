@@ -56,8 +56,8 @@ router.post('/', async (req, res) => {
                 message: "class already exists"
             });
 
-        let user = await users.User.findOne({
-            _id: req.body.professor.id
+        let user = await users.model.findOne({
+            _id: req.body.professor._id
         }).populate('user');
 
         // create a new class and save it to the database
@@ -75,6 +75,7 @@ router.post('/', async (req, res) => {
         }).populate('class');
         user.classes.push({
             name: createdClass.name,
+            id: createdClass._id,
         })
         await user.save();
 
@@ -87,3 +88,35 @@ router.post('/', async (req, res) => {
         return res.sendStatus(500);
     }
 });
+
+router.post('/class', async (req, res) => {
+    if (!req.body.classId)
+        return res.status(400).send({
+            message: "Class id is required"
+        });
+    try {
+
+        const existingClass = await Class.findOne({
+            _id: req.body.classId
+        });
+
+        if (!existingClass)
+            return res.status(403).send({
+                message: "Class not found"
+            });
+
+        // send back a 200 OK response, along with the class that was found
+        return res.send({
+            queriedClass: existingClass
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+});
+
+module.exports = {
+    routes: router,
+    model: Class,
+};
