@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
             return res.status(403).send({
                 message: "class already exists"
             });
-
+        // Find a professor by id
         let user = await users.model.findOne({
             _id: req.body.professor._id
         }).populate('user');
@@ -90,7 +90,11 @@ router.post('/', async (req, res) => {
     }
 });
 
+//Get a class by class id
 router.post('/class', async (req, res) => {
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
     if (!req.body.classId)
         return res.status(400).send({
             message: "Class id is required"
@@ -102,7 +106,7 @@ router.post('/class', async (req, res) => {
         });
 
         if (!existingClass)
-            return res.status(403).send({
+            return res.status(404).send({
                 message: "Class not found"
             });
 
