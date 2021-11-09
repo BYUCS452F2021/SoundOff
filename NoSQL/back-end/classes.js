@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require('mongoose');
 // Get other collections for the N:M relationship
 const users = require("./users.js");
-
 const router = express.Router();
 
 //
