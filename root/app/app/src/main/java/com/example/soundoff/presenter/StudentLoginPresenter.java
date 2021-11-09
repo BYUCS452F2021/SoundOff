@@ -7,13 +7,14 @@ import com.example.soundoff.service.response.StudentLoginResponse;
 import java.io.IOException;
 
 public class StudentLoginPresenter {
-    private final StudentLoginPresenter.View view;
+    //private final StudentLoginPresenter.View view;
+    private final View view;
 
     public interface View {
 
     }
 
-    public StudentLoginPresenter(StudentLoginPresenter.View view) {
+    public StudentLoginPresenter(View view) {
         this.view = view;
     }
 

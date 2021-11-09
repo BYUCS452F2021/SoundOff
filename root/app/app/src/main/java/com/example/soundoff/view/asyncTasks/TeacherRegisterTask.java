@@ -32,7 +32,7 @@ public class TeacherRegisterTask extends AsyncTask<TeacherRegisterRequest, Void,
     protected TeacherRegisterResponse doInBackground(TeacherRegisterRequest... teacherRegisterRequests) {
         TeacherRegisterResponse teacherRegisterResponse = null;
 
-//        try {
+        try {
             teacherRegisterResponse = presenter.registerTeacher(teacherRegisterRequests[0]);
 
             if(teacherRegisterResponse.isSuccess()) {
@@ -42,9 +42,9 @@ public class TeacherRegisterTask extends AsyncTask<TeacherRegisterRequest, Void,
 //                StoryRequest request = new StoryRequest(postResponse.getPost().getPoster(), 10, null);
 //                getStoryTask.execute(request);
             }
-//        } catch (IOException ex) {
-//            exception = ex;
-//        }
+        } catch (IOException ex) {
+            exception = ex;
+        }
 
         return teacherRegisterResponse;
     }

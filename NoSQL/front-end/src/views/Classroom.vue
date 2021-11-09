@@ -15,19 +15,29 @@
       </div>
     </div>
     <div v-if="type==='professor'" class="addStudents">
+      <multiselect id="multi" class="selector" v-model="studentsToAdd" :options="possibleStudents" placeholder="Select Students" label="email" track-by="id" :multiple="true" :clear-on-select="false" :close-on-select="false"></multiselect>
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="addStudents">Add Students</button>
     </div>
   </div>
 </template>
 
 <script>
+
+import axios from "axios";
+import Multiselect from 'vue-multiselect';
+
 export default {
   name: "Classroom.vue",
+  components: {
+    Multiselect
+  },
   data() {
     return {
       type: this.$root.$data.user.accountType,
       classroom: this.$root.$data.currentClass,
       students: this.$root.$data.currentClass.students,
+      possibleStudents: [],
+      studentsToAdd: [],
     }
   },
   created() {
@@ -37,19 +47,28 @@ export default {
     async addStudents() {
       try {
         let time = Date.now();
-        // TODO: Add functionality to add students
-        console.log("Add Students: " + (Date.now()-time)/1000);
+        if(!this.studentsToAdd || !this.classroom) {
+          return;
+        }
+        let response = await axios.post('/api/classes/addStudents', {
+          students: this.studentsToAdd,
+          classroom: this.classroom,
+        });
+        this.$root.$data.currentClass = response.data.queriedClass;
+        console.log("Add Students to Class: " + (Date.now()-time)/1000);
+        await this.$router.push({path: 'classroom'});
       } catch (error) {
-        console.log("Add Students Failure" + error);
+        console.log("Add Students Failure:" + error);
       }
     },
     async getStudents() {
       try {
         let time = Date.now();
-        // TODO: Add functionality to get all students
+        let response = await axios.post('/api/users/students');
+        this.possibleStudents = response.data.possibleStudents;
         console.log("Get Students: " + (Date.now()-time)/1000);
       } catch (error) {
-        console.log("Get Students Failure" + error);
+        console.log("Get Students Failure:" + error);
       }
     },
     async goBack() {
@@ -62,6 +81,8 @@ export default {
   },
 }
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
 .title, .studentList{
@@ -96,6 +117,10 @@ export default {
 .studentBox:hover {
   transform: scale(1.1);
   transition-duration: 100ms;
+}
+.selector {
+  width: 70%;
+  margin: 10px;
 }
 
 </style>
