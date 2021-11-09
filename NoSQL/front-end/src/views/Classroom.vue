@@ -15,6 +15,7 @@
       </div>
     </div>
     <div v-if="type==='professor'" class="addStudents">
+      <multiselect id="multi" class="selector" v-model="studentsToAdd" :options="possibleStudents" placeholder="Select Students" label="email" track-by="id" :multiple="true" :clear-on-select="false" :close-on-select="false"></multiselect>
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="addStudents">Add Students</button>
     </div>
   </div>
@@ -23,14 +24,20 @@
 <script>
 
 import axios from "axios";
+import Multiselect from 'vue-multiselect';
 
 export default {
   name: "Classroom.vue",
+  components: {
+    Multiselect
+  },
   data() {
     return {
       type: this.$root.$data.user.accountType,
       classroom: this.$root.$data.currentClass,
       students: this.$root.$data.currentClass.students,
+      possibleStudents: [],
+      studentsToAdd: [],
     }
   },
   created() {
@@ -40,40 +47,28 @@ export default {
     async addStudents() {
       try {
         let time = Date.now();
-        // TODO: Add functionality to add students
-        let emailList = prompt("Please enter a list of students' names separated by commas", "email@example.com, example@email.com");
-        if (emailList === "email@example.com, example@email.com") {
+        if(!this.studentsToAdd || !this.classroom) {
           return;
         }
-        // var emailArr = emailList.split(',');
-        
-        console.log(this.$root.$data.user);
-        // for(var email in emailArr){
-          let response = await axios.post('/api/[api call for adding student]/', {
-            email: emailList//emailArr[email],
-            // professor: this.$root.$data.user,
-          });
-          this.$root.$data.user = response.data.user;
-          console.log("Add Students to Class: " + (Date.now()-time)/1000);
-        // }
-        console.log("Add Students: " + (Date.now()-time)/1000);
-      } catch (error) {
-        console.log("Add Students Failure" + error);
-      }
-    },
-    async getStudents(studentID) {
-      try {
-        let time = Date.now();
-        // TODO: Add functionality to get all students
-        console.log(studentID);
-        let response = await axios.post('/api/[api call for getting students]/', {
-          studentID: studentID,
+        let response = await axios.post('/api/classes/addStudents', {
+          students: this.studentsToAdd,
+          classroom: this.classroom,
         });
         this.$root.$data.currentClass = response.data.queriedClass;
-        // await this.$router.push({path: 'classroom'});
+        console.log("Add Students to Class: " + (Date.now()-time)/1000);
+        await this.$router.push({path: 'classroom'});
+      } catch (error) {
+        console.log("Add Students Failure:" + error);
+      }
+    },
+    async getStudents() {
+      try {
+        let time = Date.now();
+        let response = await axios.post('/api/users/students');
+        this.possibleStudents = response.data.possibleStudents;
         console.log("Get Students: " + (Date.now()-time)/1000);
       } catch (error) {
-        console.log("Get Students Failure" + error);
+        console.log("Get Students Failure:" + error);
       }
     },
     async goBack() {
@@ -86,6 +81,8 @@ export default {
   },
 }
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style scoped>
 .title, .studentList{
@@ -120,6 +117,10 @@ export default {
 .studentBox:hover {
   transform: scale(1.1);
   transition-duration: 100ms;
+}
+.selector {
+  width: 70%;
+  margin: 10px;
 }
 
 </style>
