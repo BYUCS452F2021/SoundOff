@@ -31,11 +31,16 @@ import com.example.soundoff.data.model.Professor;
 import com.example.soundoff.data.model.Student;
 import com.example.soundoff.presenter.StudentLoginPresenter;
 import com.example.soundoff.presenter.StudentRegisterPresenter;
+import com.example.soundoff.presenter.TeacherLoginPresenter;
+import com.example.soundoff.presenter.TeacherRegisterPresenter;
 import com.example.soundoff.service.request.StudentLoginRequest;
 import com.example.soundoff.service.request.StudentRegisterRequest;
+import com.example.soundoff.service.request.TeacherRegisterRequest;
 import com.example.soundoff.service.response.StudentLoginResponse;
+import com.example.soundoff.service.response.TeacherRegisterResponse;
 import com.example.soundoff.view.asyncTasks.StudentLoginTask;
 import com.example.soundoff.view.asyncTasks.StudentRegisterTask;
+import com.example.soundoff.view.asyncTasks.TeacherRegisterTask;
 
 import java.io.ByteArrayOutputStream;
 
@@ -55,8 +60,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private Toast loginInToast;
 
-    private StudentLoginPresenter presenter;
-    private StudentRegisterPresenter rPresenter;
+    private StudentLoginPresenter sLPresenter;
+    private StudentRegisterPresenter sRPresenter;
+    private TeacherLoginPresenter tLPresenter;
+    private TeacherRegisterPresenter tRPresenter;
 
     private EditText emailEdit;
     private EditText passwordEdit;
@@ -83,9 +90,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-//
-//        presenter = new StudentLoginPresenter(this);
-//        rPresenter = new StudentRegisterPresenter(this);
+
+        sLPresenter = new StudentLoginPresenter(this);
+        sRPresenter = new StudentRegisterPresenter(this);
+        tLPresenter = new StudentLoginPresenter(this);
+        tRPresenter = new StudentRegisterPresenter(this);
 
 
 
@@ -104,34 +113,34 @@ public class LoginActivity extends AppCompatActivity {
         teacherRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                setUser(True);
+                setUser(true);
             }
         });
-//
+
         studentRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                setUser(False);
+                setUser(false);
             }
         });
-//
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//
-//
-//            @Override
-//            public void onClick(View view) {
-//                Login(view);
-//            }
-//        });
-//
-//        signUpButton.setOnClickListener(new View.OnClickListener() {
-//
-//
-//            @Override
-//            public void onClick(View view) {
-//                Register(view);
-//            }
-//        });
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View view) {
+                Login(view);
+            }
+        });
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View view) {
+                Register(view);
+            }
+        });
 
 
     }
@@ -146,13 +155,13 @@ public class LoginActivity extends AppCompatActivity {
         loginInToast = Toast.makeText(LoginActivity.this, "Logging In", Toast.LENGTH_LONG);
         loginInToast.show();
 
-//        private String email;
-//        private String password;
-//        private String name;
-//        private String major;
-//        private String phone;
-//        private String degree;
-//        private Boolean isTeacher;
+        String email;
+        String password;
+        String name;
+        String major;
+        String phone;
+        String degree;
+        Boolean isTeacher;
 
         email = emailEdit.getText().toString();
 
@@ -164,6 +173,9 @@ public class LoginActivity extends AppCompatActivity {
             StudentLoginRequest loginRequest = new StudentLoginRequest();//email, password);
 //            StudentLoginTask loginTask = new StudentLoginTask(presenter, LoginActivity.this);
 //            loginTask.execute(loginRequest);
+        } else {
+            loginInToast = Toast.makeText(LoginActivity.this, "ERROR: Please fill out email and password", Toast.LENGTH_LONG);
+            loginInToast.show();
         }
 
 
@@ -184,16 +196,25 @@ public class LoginActivity extends AppCompatActivity {
 //        lastName = lastNameEdit.getText().toString();
 //
 //        username = "@" + userNameEdit.getText().toString();
-//
-//        password = passwordEdit.getText().toString();
+
+        email = emailEdit.getText().toString();
+        name = nameEdit.getText().toString();
+        major = majorEdit.getText().toString();
+        phone = phoneEdit.getText().toString();
+
+        password = passwordEdit.getText().toString();
 
 
-//        if (firstName != "" && lastName != "" && username != "" && password != "" && currentPhoto != null) {
-//            // It doesn't matter what values we put here. We will be logged in with a hard-coded dummy user.
-//            StudentRegisterRequest registerRequest = new StudentRegisterRequest();//firstName, lastName, username, password, currentPhoto);
-//            StudentRegisterTask registerTask = new StudentRegisterTask(rPresenter, LoginActivity.this);
-//            registerTask.execute(registerRequest);
-//        }
+        if (email != "" && password != "" && name != "" && major != "" && phone != null && degree != "" && isTeacher == false) {
+            // It doesn't matter what values we put here. We will be logged in with a hard-coded dummy user.
+            StudentRegisterRequest registerRequest = new StudentRegisterRequest();//firstName, lastName, username, password, currentPhoto);
+            StudentRegisterTask registerTask = new StudentRegisterTask(sRPresenter, LoginActivity.this);
+            registerTask.execute(registerRequest);
+        } else if (email != "" && password != "" && name != "" && major != "" && phone != null && degree != "" && isTeacher == true) {
+            TeacherRegisterRequest registerRequest = new TeacherRegisterRequest();//firstName, lastName, username, password, currentPhoto);
+            TeacherRegisterTask registerTask = new TeacherRegisterTask(tRPresenter, LoginActivity.this);
+            registerTask.execute(registerRequest);
+        }
 
 
     }

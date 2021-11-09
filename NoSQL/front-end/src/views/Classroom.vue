@@ -21,6 +21,9 @@
 </template>
 
 <script>
+
+import axios from "axios";
+
 export default {
   name: "Classroom.vue",
   data() {
@@ -38,15 +41,36 @@ export default {
       try {
         let time = Date.now();
         // TODO: Add functionality to add students
+        let emailList = prompt("Please enter a list of students' names separated by commas", "email@example.com, example@email.com");
+        if (emailList === "email@example.com, example@email.com") {
+          return;
+        }
+        // var emailArr = emailList.split(',');
+        
+        console.log(this.$root.$data.user);
+        // for(var email in emailArr){
+          let response = await axios.post('/api/[api call for adding student]/', {
+            email: emailList//emailArr[email],
+            // professor: this.$root.$data.user,
+          });
+          this.$root.$data.user = response.data.user;
+          console.log("Add Students to Class: " + (Date.now()-time)/1000);
+        // }
         console.log("Add Students: " + (Date.now()-time)/1000);
       } catch (error) {
         console.log("Add Students Failure" + error);
       }
     },
-    async getStudents() {
+    async getStudents(studentID) {
       try {
         let time = Date.now();
         // TODO: Add functionality to get all students
+        console.log(studentID);
+        let response = await axios.post('/api/[api call for getting students]/', {
+          studentID: studentID,
+        });
+        this.$root.$data.currentClass = response.data.queriedClass;
+        // await this.$router.push({path: 'classroom'});
         console.log("Get Students: " + (Date.now()-time)/1000);
       } catch (error) {
         console.log("Get Students Failure" + error);
