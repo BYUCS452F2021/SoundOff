@@ -176,6 +176,10 @@ router.post('/addStudents', async (req, res) => {
     }
 });
 
+// TODO: Create an endpoint to create a class lecture and a code
+
+// TODO: Create an endpoint for a student to attend a class lecture
+
 module.exports = {
     routes: router,
     model: Class,
