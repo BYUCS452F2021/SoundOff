@@ -57,6 +57,7 @@ export default {
         });
         this.$root.$data.currentClass = response.data.queriedClass;
         console.log("Get Class: " + (Date.now()-time)/1000);
+        await this.$router.push("/classroom");
       } catch (error) {
         console.log("Get Class Failure" + error.message);
       }

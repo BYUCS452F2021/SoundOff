@@ -145,9 +145,9 @@ router.post('/addStudents', async (req, res) => {
                // only add the student to the class if it doesn't exist in the student list
                if((!await currentClass.students.find(user._id))){
                    // Update the class' student list to include the user
-                   currentClass.students.push(user);
+                   await currentClass.students.push(user);
                    // Update the student classes list to include the class, then save the user changes
-                   user.classes.push({
+                   await user.classes.push({
                        id: currentClass._id,
                        name: currentClass.name
                    });
@@ -175,6 +175,46 @@ router.post('/addStudents', async (req, res) => {
         return res.sendStatus(500);
     }
 });
+
+router.post('/lecture', async (req, res) => {
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
+    if (!req.body.classroom || !req.body.startTime || !req.body.endTime)
+        return res.status(400).send({
+            message: "A Class, start time and an end time are required are required"
+        });
+    try {
+        let currentClass = await Class.findOne({
+            _id: req.body.classroom._id
+        });
+        if (!currentClass)
+            return res.status(404).send({
+                message: "Class not found"
+            });
+        let newLecture = {
+            classID: req.body.classroom._id,
+            code: Math.floor(100000 + Math.random() * 900000),
+            startTime: req.body.startTime,
+            endTime: req.body.startTime,
+        };
+        currentClass.lectures.push(newLecture);
+        await currentClass.save();
+
+        // send back a 200 OK response, along with the class that was found
+        return res.send({
+            queriedClass: currentClass,
+            code: newLecture.code,
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+});
+
+// TODO: Create an endpoint for a student to attend a class lecture
+
 
 module.exports = {
     routes: router,

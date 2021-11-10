@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     },
     classes: [], //list of class ids
+    attendances: [],
 });
 
 // This is a hook that will be called before a user record is saved,
