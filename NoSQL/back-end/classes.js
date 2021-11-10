@@ -145,9 +145,9 @@ router.post('/addStudents', async (req, res) => {
                // only add the student to the class if it doesn't exist in the student list
                if((!await currentClass.students.find(user._id))){
                    // Update the class' student list to include the user
-                   await currentClass.students.push(user);
+                   currentClass.students.push(user);
                    // Update the student classes list to include the class, then save the user changes
-                   await user.classes.push({
+                   user.classes.push({
                        id: currentClass._id,
                        name: currentClass.name
                    });

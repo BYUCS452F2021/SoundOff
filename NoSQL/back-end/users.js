@@ -226,12 +226,15 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// TODO: Create a get all students endpoint for adding students to a class
 router.post("/students", async (req, res) => {
     try {
-        return res.send({
-            possibleStudents: []
-        });
+        let allUsers = await User.find({type: "student"});
+        if (allUsers.length < 1) {
+            return res.sendStatus(404).send({ message: "NO STUDENTS FOUND"});
+        }
+        else {
+            return res.send({possibleStudents: allUsers});
+        }
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
