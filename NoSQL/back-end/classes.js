@@ -196,7 +196,7 @@ router.post('/lecture', async (req, res) => {
             classID: req.body.classroom._id,
             code: Math.floor(100000 + Math.random() * 900000),
             startTime: req.body.startTime,
-            endTime: req.body.startTime,
+            endTime: req.body.endTime,
         };
         currentClass.lectures.push(newLecture);
         await currentClass.save();
