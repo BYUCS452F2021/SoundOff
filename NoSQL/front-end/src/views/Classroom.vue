@@ -123,8 +123,8 @@ export default {
       try {
         console.log(this.lectureDate);
         console.log((this.lectureDate).type);
-        this.lectureDate.setHours(this.startTime.hh);
-        this.lectureDate.setMinutes(this.startTime.mm);
+        this.lectureDate.setHours(this.startTime.hh); //This causes an error because lecture date isn't a date object
+        this.lectureDate.setMinutes(this.startTime.mm); //This causes an error
         let startTime = this.lectureDate;
         console.log(startTime);
         this.lectureDate.setHours(this.endTime.hh);
