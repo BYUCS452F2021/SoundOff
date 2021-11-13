@@ -23,8 +23,8 @@
       <p v-if="type==='student'">{{presentLectures}}/{{lectures.length}}</p>
       <div v-if="lectures.length>0" class="studentList">
         <div v-for="item in lectures" v-bind:key="item.code" class="studentBox">
-          <p>{{item.startTime}}</p>
-          <p v-if="type==='professor'">{{item.code}}</p>
+          <p>{{moment(item.startTime)}} - {{moment(item.endTime)}}</p>
+          <p v-if="type==='professor'">Code: {{item.code}}</p>
           <p v-if="type==='student'">{{item.present}}/1</p>
         </div>
       </div>
@@ -52,7 +52,8 @@
 import axios from "axios";
 import Multiselect from 'vue-multiselect';
 import Datepicker from 'vuejs-datepicker';
-import VueTimepicker from 'vue2-timepicker'
+import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
 
 export default {
   name: "Classroom.vue",
@@ -70,14 +71,14 @@ export default {
       studentsToAdd: [],
       lectures: this.$root.$data.currentClass.lectures,
       presentLectures: 0,
-      lectureDate: '',
+      lectureDate: moment(this.lectureDate).format('MM/DD/YYYY'),
       startTime: {
-        hh: '',
-        mm: '',
+        HH: '00',
+        mm: '00',
       },
       endTime: {
-        hh: '',
-        mm: '',
+        HH: '01',
+        mm: '00',
       }
     }
   },
@@ -121,16 +122,12 @@ export default {
     },
     async createLecture() {
       try {
-        console.log(this.lectureDate);
-        console.log((this.lectureDate).type);
-        this.lectureDate.setHours(this.startTime.hh); //This causes an error because lecture date isn't a date object
-        this.lectureDate.setMinutes(this.startTime.mm); //This causes an error
-        let startTime = this.lectureDate;
-        console.log(startTime);
-        this.lectureDate.setHours(this.endTime.hh);
-        this.lectureDate.setMinutes(this.endTime.mm);
-        let endTime = this.lectureDate;
-        console.log(endTime);
+        let date = new Date(this.lectureDate.toString());
+        console.log(date);
+
+        let startTime = date.setHours(this.startTime.HH, this.startTime.mm);
+        let endTime = date.setHours(this.endTime.HH, this.endTime.mm);
+
         let time = Date.now();
         if(!startTime || !this.classroom || !endTime) {
           return;
@@ -188,7 +185,9 @@ export default {
         }
       }
       this.presentLectures = presentLectures;
-
+    },
+    moment(time) {
+      return moment(time).format('MMMM DD YYYY, h:mm a');
     }
   },
 }
