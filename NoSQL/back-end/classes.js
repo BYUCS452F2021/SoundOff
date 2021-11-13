@@ -102,7 +102,7 @@ router.post('/class', async (req, res) => {
 
         const existingClass = await Class.findOne({
             _id: req.body.classId
-        });
+        }).populate('class');
 
         if (!existingClass)
             return res.status(404).send({
@@ -132,7 +132,7 @@ router.post('/addStudents', async (req, res) => {
     try {
         let currentClass = await Class.findOne({
             _id: req.body.classroom._id
-        });
+        }).populate('class');
         if (!currentClass)
             return res.status(404).send({
                 message: "Class not found"
@@ -187,7 +187,7 @@ router.post('/lecture', async (req, res) => {
     try {
         let currentClass = await Class.findOne({
             _id: req.body.classroom._id
-        });
+        }).populate('class');
         if (!currentClass)
             return res.status(404).send({
                 message: "Class not found"
@@ -213,7 +213,53 @@ router.post('/lecture', async (req, res) => {
     }
 });
 
-// TODO: Create an endpoint for a student to attend a class lecture
+router.post('/addAttendance', async (req, res) => {
+    const curTime = Date.now();
+    let matchingLecture = null;
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
+    if (!req.body.classID || !req.body.code || !req.body.studentID )
+        return res.status(400).send({
+            message: "A Class id, Student ID, start time and an end time are required"
+        });
+    try {
+        const lectures = await Class.findOne.lectures({_id: req.body.classID }, "lectures"); //pull array of lectures for specified class
+        if (!lectures) {
+            return res.sendStatus(418).send({ message: "Error: Lecture doesn't exist" });
+        }
+        for (let curLecture of lectures) {
+            if (curLecture.startTime < curTime && curLecture.endTime > curTime
+                && curLecture.code === req.body.code) {
+                matchingLecture = curLecture;
+                break;
+            }
+        }
+        if (!matchingLecture) {
+            return res.sendStatus(418).send({ message: "Error: code invalid or time invalid" });
+        }
+        let student = await users.model.findOne({_id: req.body.studentID}).populate('user');
+        if (!student)
+            return res.status(404).send({
+                message: "Student not found"
+            });
+        for (let curAttendance of student.attendances) {
+            if (curAttendance.id === matchingLecture.id) {
+                return res.sendStatus(418).send( { message: "Error: Attendance already entered"} );
+            }
+        }
+
+        student.attendances.push(matchingLecture);
+        await student.save();
+        return res.send({
+            student: student,
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+    });
 
 
 module.exports = {

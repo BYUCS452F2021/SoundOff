@@ -229,7 +229,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/students", async (req, res) => {
     try {
-        let allUsers = await User.find({type: "student"});
+        let allUsers = await User.find({ accountType: "student" }).populate('user');
         if (allUsers.length < 1) {
             return res.sendStatus(404).send({ message: "NO STUDENTS FOUND"});
         }
