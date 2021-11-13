@@ -121,8 +121,16 @@ export default {
     },
     async createLecture() {
       try {
-        let endTime = this.lectureDate + this.endTime;
-        let startTime = this.lectureDate + this.startTime;
+        console.log(this.lectureDate);
+        console.log((this.lectureDate).type);
+        this.lectureDate.setHours(this.startTime.hh);
+        this.lectureDate.setMinutes(this.startTime.mm);
+        let startTime = this.lectureDate;
+        console.log(startTime);
+        this.lectureDate.setHours(this.endTime.hh);
+        this.lectureDate.setMinutes(this.endTime.mm);
+        let endTime = this.lectureDate;
+        console.log(endTime);
         let time = Date.now();
         if(!startTime || !this.classroom || !endTime) {
           return;
@@ -134,10 +142,10 @@ export default {
         });
         this.$root.$data.currentClass = response.data.queriedClass;
         let code = response.data.code;
-        console.log("Get Students: " + (Date.now()-time)/1000);
+        console.log("Create Lecture: " + (Date.now()-time)/1000);
         window.alert(code.toString());
       } catch (error) {
-        console.log("Get Students Failure:" + error);
+        console.log("Create Lecture Failure:" + error);
       }
     },
     async attendLecture() {
