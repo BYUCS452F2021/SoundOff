@@ -33,7 +33,6 @@
       </div>
     </div>
 
-
     <div v-if="type==='professor'" class="addStudents">
       <Datepicker class="dateBox" placeholder="Select a Lecture Date" v-model="lectureDate"></Datepicker>
       <vue-timepicker placeholder="Start Time" v-model="startTime"></vue-timepicker>
@@ -98,7 +97,6 @@ export default {
         });
         this.$root.$data.currentClass = response.data.queriedClass;
         console.log("Add Students to Class: " + (Date.now()-time)/1000);
-        await this.$router.push({path: 'classroom'});
       } catch (error) {
         console.log("Add Students Failure:" + error);
       }
