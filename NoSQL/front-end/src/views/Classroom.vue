@@ -166,11 +166,22 @@ export default {
     async isPresent(id) {
       try {
         let time = Date.now();
+        let attendance = 0;
 
-        console.log(id);
         // TODO: Calculate a student's attendance (needs to be called by downloadStudentReport and classAttendanceReport)
-
+        for(let student in this.possibleStudents) {
+          if(student._id === id) {
+            for(let item in student.attendances) {
+              for(let lecture in this.lectures) {
+                if(item.code === lecture.code) {
+                  attendance = attendance + 1;
+                }
+              }
+            }
+          }
+        }
         console.log("Attendance Calculated: " + (Date.now()-time)/1000);
+        return attendance;
       } catch (error) {
         console.log("Attendance Calculation Error: " + error);
       }
@@ -179,8 +190,9 @@ export default {
       try {
         let time = Date.now();
 
-        console.log(id);
+        let attendance = await this.isPresent(id);
         // TODO: download a student's attendance report
+        console.log(id + " Attendance: " + attendance);
 
         console.log("Download Student Attendance Report: " + (Date.now()-time)/1000);
       } catch (error) {
