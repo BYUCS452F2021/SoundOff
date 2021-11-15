@@ -8,6 +8,9 @@
       <div v-if="students.length>0 && type==='professor'" class="studentList">
         <div v-for="item in students" v-bind:key="item.id" class="studentBox">
           <p>{{item.name}}</p>
+          <p>{{item.email}}</p>
+          <button type="submit" class="pure-button pure-button-primary" @click.prevent="downloadStudentReport(item._id)">Download Attendance</button>
+          <!--<p>Lectures Present: {{item.attendances.length}}/{{lectures.length}} ({{(item.attendances.length/lectures.length)*100}}%)</p>-->
         </div>
       </div>
       <div v-else>
@@ -20,12 +23,11 @@
     </div>
 
     <div class="LectureList">
-      <p v-if="type==='student'">{{presentLectures}}/{{lectures.length}}</p>
+      <p v-if="type==='student'">Lectures Present: {{presentLectures}}/{{lectures.length}} ({{(presentLectures/lectures.length)*100}}%)</p>
       <div v-if="lectures.length>0" class="studentList">
         <div v-for="item in lectures" v-bind:key="item.code" class="studentBox">
           <p>{{moment(item.startTime)}} - {{moment(item.endTime)}}</p>
           <p v-if="type==='professor'">Code: {{item.code}}</p>
-          <p v-if="type==='student'">{{item.present}}/1</p>
         </div>
       </div>
       <div v-else>
@@ -69,7 +71,7 @@ export default {
       possibleStudents: [],
       studentsToAdd: [],
       lectures: this.$root.$data.currentClass.lectures,
-      presentLectures: 0,
+      presentLectures: this.$root.$data.user.attendances.length,
       lectureDate: moment(this.lectureDate).format('MM/DD/YYYY'),
       startTime: {
         HH: '00',
@@ -156,33 +158,45 @@ export default {
           studentID: this.$root.$data.user._id,
         });
         this.$root.$data.user = response.data.student;
-        console.log("Get Students: " + (Date.now()-time)/1000);
+        console.log("Attend Lecture: " + (Date.now()-time)/1000);
       } catch (error) {
-        console.log("Get Students Failure:" + error);
+        console.log("Attend Lecture Failure:" + error);
       }
     },
-    async isPresent() {
-      let totalLectures = this.lectures.length;
-      let presentLectures = 0;
-      if (this.type === "student" && totalLectures > 0) {
-        try {
-          for (let i = 0; i < totalLectures; i++) {
-            if(this.lectures[i].code) {
-              let found = this.$root.$data.user.attendances.find(this.lectures[i].code);
-              if(found) {
-                this.lectures.present = 1;
-                presentLectures += 1;
-              }
-              else {
-                this.lectures.present = 0;
-              }
-            }
-          }
-        } catch (error) {
-          console.log("Attendance Calculation Error:" + error);
-        }
+    async isPresent(id) {
+      try {
+        let time = Date.now();
+
+        console.log(id);
+        // TODO: Calculate a student's attendance (needs to be called by downloadStudentReport and classAttendanceReport)
+
+        console.log("Attendance Calculated: " + (Date.now()-time)/1000);
+      } catch (error) {
+        console.log("Attendance Calculation Error: " + error);
       }
-      this.presentLectures = presentLectures;
+    },
+    async downloadStudentReport(id) {
+      try {
+        let time = Date.now();
+
+        console.log(id);
+        // TODO: download a student's attendance report
+
+        console.log("Download Student Attendance Report: " + (Date.now()-time)/1000);
+      } catch (error) {
+        console.log("Download Student Attendance Report Failure:" + error);
+      }
+    },
+    async classAttendanceReport() {
+      try {
+        let time = Date.now();
+
+        // TODO: Generate class attendance report
+
+        console.log("Class Attendance Report: " + (Date.now()-time/1000))
+      } catch (error) {
+        console.log("Class Attendance Report Error: " + error);
+      }
     },
     moment(time) {
       return moment(time).format('MMMM DD YYYY, h:mm a');

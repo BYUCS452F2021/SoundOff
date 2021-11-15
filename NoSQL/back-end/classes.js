@@ -143,7 +143,7 @@ router.post('/addStudents', async (req, res) => {
             }).populate('user');
            if(user) {
                // only add the student to the class if it doesn't exist in the student list
-               if((!await currentClass.students.includes({_id: user._id, name: user.name, email: user.email}))){
+               if((!await currentClass.students.includes({_id: user._id}))){ // TODO: Fix this so that the students are not added more than once.
                    // Update the class' student list to include the user
                    await currentClass.students.push({
                        _id: user._id,
@@ -228,19 +228,22 @@ router.post('/addAttendance', async (req, res) => {
             message: "A Class id, Student ID, start time and an end time are required"
         });
     try {
-        const lectures = await Class.findOne.lectures({_id: req.body.classID }, "lectures"); //pull array of lectures for specified class
-        if (!lectures) {
+        let lecturesClass = await Class.findOne({_id: req.body.classID }).populate('class');
+        if(!lecturesClass) {
+            return res.sendStatus(404).send({ message: "Error: Class not found" });
+        }
+        let lectures = lecturesClass.lectures;
+        if (lectures.length < 1) {
             return res.sendStatus(418).send({ message: "Error: Lecture doesn't exist" });
         }
         for (let curLecture of lectures) {
-            if (curLecture.startTime < curTime && curLecture.endTime > curTime
-                && curLecture.code === req.body.code) {
+            if ((curLecture.startTime < curTime) && (curLecture.endTime > curTime) && (curLecture.code.toString() === req.body.code)) {
                 matchingLecture = curLecture;
                 break;
             }
         }
         if (!matchingLecture) {
-            return res.sendStatus(418).send({ message: "Error: code invalid or time invalid" });
+            return res.sendStatus(401).send({ message: "Error: code invalid or time invalid" });
         }
         let student = await users.model.findOne({_id: req.body.studentID}).populate('user');
         if (!student)
