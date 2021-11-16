@@ -39,7 +39,6 @@ export default {
           return;
         }
         let time = Date.now();
-        console.log(this.$root.$data.user);
         let response = await axios.post('/api/classes/', {
           name: className,
           professor: this.$root.$data.user,
@@ -53,13 +52,12 @@ export default {
     async getClass(classID) {
       try {
         let time = Date.now();
-        console.log(classID);
         let response = await axios.post('/api/classes/class', {
           classId: classID,
         });
         this.$root.$data.currentClass = response.data.queriedClass;
         console.log("Get Class: " + (Date.now()-time)/1000);
-        await this.$router.push({path: 'classroom'});
+        await this.$router.push("/classroom");
       } catch (error) {
         console.log("Get Class Failure" + error.message);
       }

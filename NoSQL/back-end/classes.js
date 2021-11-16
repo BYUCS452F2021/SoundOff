@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require('mongoose');
 // Get other collections for the N:M relationship
 const users = require("./users.js");
-
 const router = express.Router();
 
 //
@@ -56,7 +55,7 @@ router.post('/', async (req, res) => {
             return res.status(403).send({
                 message: "class already exists"
             });
-
+        // Find a professor by id
         let user = await users.model.findOne({
             _id: req.body.professor._id
         }).populate('user');
@@ -90,7 +89,11 @@ router.post('/', async (req, res) => {
     }
 });
 
+//Get a class by class id
 router.post('/class', async (req, res) => {
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
     if (!req.body.classId)
         return res.status(400).send({
             message: "Class id is required"
@@ -99,10 +102,10 @@ router.post('/class', async (req, res) => {
 
         const existingClass = await Class.findOne({
             _id: req.body.classId
-        });
+        }).populate('class');
 
         if (!existingClass)
-            return res.status(403).send({
+            return res.status(404).send({
                 message: "Class not found"
             });
 
@@ -116,6 +119,152 @@ router.post('/class', async (req, res) => {
         return res.sendStatus(500);
     }
 });
+
+//Add student to a class
+router.post('/addStudents', async (req, res) => {
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
+    if (!req.body.students || !req.body.classroom)
+        return res.status(400).send({
+            message: "Students and a Class are required"
+        });
+    try {
+        let currentClass = await Class.findOne({
+            _id: req.body.classroom._id
+        }).populate('class');
+        if (!currentClass)
+            return res.status(404).send({
+                message: "Class not found"
+            });
+        for (let i = 0; i < req.body.students.length; i++) {
+           let user = await users.model.findOne({
+                _id: req.body.students[i]._id
+            }).populate('user');
+           if(user) {
+               // only add the student to the class if it doesn't exist in the student list
+               if((!await currentClass.students.includes({_id: user._id, name: user.name, email: user.email}))){
+                   // Update the class' student list to include the user
+                   await currentClass.students.push({
+                       _id: user._id,
+                       name: user.name,
+                       email: user.email
+                   });
+                   // Update the student classes list to include the class, then save the user changes
+                   await user.classes.push({
+                       id: currentClass._id,
+                       name: currentClass.name
+                   });
+                   await user.save();
+               }
+           } else {
+               // Make sure that the form coming from the browser includes all required fields,
+               // otherwise return an error. A 400 error means the request was
+               // malformed. (It didn't have an id)
+               return res.status(400).send({
+                   message: "Student id is required, or student not found"
+               });
+           }
+        }
+
+        await currentClass.save();
+
+        // send back a 200 OK response, along with the class that was found
+        return res.send({
+            queriedClass: currentClass
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+});
+
+router.post('/lecture', async (req, res) => {
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
+    if (!req.body.classroom || !req.body.startTime || !req.body.endTime)
+        return res.status(400).send({
+            message: "A Class, start time and an end time are required are required"
+        });
+    try {
+        let currentClass = await Class.findOne({
+            _id: req.body.classroom._id
+        }).populate('class');
+        if (!currentClass)
+            return res.status(404).send({
+                message: "Class not found"
+            });
+        let newLecture = {
+            classID: req.body.classroom._id,
+            code: Math.floor(100000 + Math.random() * 900000),
+            startTime: req.body.startTime,
+            endTime: req.body.endTime,
+        };
+        currentClass.lectures.push(newLecture);
+        await currentClass.save();
+
+        // send back a 200 OK response, along with the class that was found
+        return res.send({
+            queriedClass: currentClass,
+            code: newLecture.code,
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+});
+
+router.post('/addAttendance', async (req, res) => {
+    const curTime = Date.now();
+    let matchingLecture = null;
+    // Make sure that the form coming from the browser includes all required fields,
+    // otherwise return an error. A 400 error means the request was
+    // malformed.
+    if (!req.body.classID || !req.body.code || !req.body.studentID )
+        return res.status(400).send({
+            message: "A Class id, Student ID, start time and an end time are required"
+        });
+    try {
+        const lectures = await Class.findOne.lectures({_id: req.body.classID }, "lectures"); //pull array of lectures for specified class
+        if (!lectures) {
+            return res.sendStatus(418).send({ message: "Error: Lecture doesn't exist" });
+        }
+        for (let curLecture of lectures) {
+            if (curLecture.startTime < curTime && curLecture.endTime > curTime
+                && curLecture.code === req.body.code) {
+                matchingLecture = curLecture;
+                break;
+            }
+        }
+        if (!matchingLecture) {
+            return res.sendStatus(418).send({ message: "Error: code invalid or time invalid" });
+        }
+        let student = await users.model.findOne({_id: req.body.studentID}).populate('user');
+        if (!student)
+            return res.status(404).send({
+                message: "Student not found"
+            });
+        for (let curAttendance of student.attendances) {
+            if (curAttendance.id === matchingLecture.id) {
+                return res.sendStatus(418).send( { message: "Error: Attendance already entered"} );
+            }
+        }
+
+        student.attendances.push(matchingLecture);
+        await student.save();
+        return res.send({
+            student: student,
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+    });
+
 
 module.exports = {
     routes: router,

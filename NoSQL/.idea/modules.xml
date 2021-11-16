@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SoundOff.iml" filepath="$PROJECT_DIR$/.idea/SoundOff.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/NoSQL.iml" filepath="$PROJECT_DIR$/.idea/NoSQL.iml" />
     </modules>
   </component>
 </project>

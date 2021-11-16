@@ -6,7 +6,7 @@
     </div>
     <div class="studentList">
       <div v-if="students.length>0 && type==='professor'" class="studentList">
-        <div v-for="item in students" v-bind:key="item.id" v-on:click="getStudents(item.id)" class="studentBox">
+        <div v-for="item in students" v-bind:key="item.id" class="studentBox">
           <p>{{item.name}}</p>
         </div>
       </div>
@@ -15,7 +15,33 @@
       </div>
     </div>
     <div v-if="type==='professor'" class="addStudents">
+      <multiselect id="multi" class="selector" v-model="studentsToAdd" :options="possibleStudents" placeholder="Select Students" label="email" track-by="id" :multiple="true" :clear-on-select="false" :close-on-select="false"></multiselect>
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="addStudents">Add Students</button>
+    </div>
+
+    <div class="LectureList">
+      <p v-if="type==='student'">{{presentLectures}}/{{lectures.length}}</p>
+      <div v-if="lectures.length>0" class="studentList">
+        <div v-for="item in lectures" v-bind:key="item.code" class="studentBox">
+          <p>{{moment(item.startTime)}} - {{moment(item.endTime)}}</p>
+          <p v-if="type==='professor'">Code: {{item.code}}</p>
+          <p v-if="type==='student'">{{item.present}}/1</p>
+        </div>
+      </div>
+      <div v-else>
+        <p>No Students</p>
+      </div>
+    </div>
+
+    <div v-if="type==='professor'" class="addStudents">
+      <Datepicker class="dateBox" placeholder="Select a Lecture Date" v-model="lectureDate"></Datepicker>
+      <vue-timepicker placeholder="Start Time" v-model="startTime"></vue-timepicker>
+      <vue-timepicker placeholder="End Time" v-model="endTime"></vue-timepicker>
+      <button type="submit" class="pure-button pure-button-primary" @click.prevent="createLecture">Create Lecture</button>
+    </div>
+
+    <div v-if="type==='student'" class="addStudents">
+      <button type="submit" class="pure-button pure-button-primary" @click.prevent="attendLecture">Attend Lecture</button>
     </div>
   </div>
 </template>
@@ -23,14 +49,36 @@
 <script>
 
 import axios from "axios";
+import Multiselect from 'vue-multiselect';
+import Datepicker from 'vuejs-datepicker';
+import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
 
 export default {
   name: "Classroom.vue",
+  components: {
+    Multiselect,
+    Datepicker,
+    VueTimepicker,
+  },
   data() {
     return {
       type: this.$root.$data.user.accountType,
       classroom: this.$root.$data.currentClass,
       students: this.$root.$data.currentClass.students,
+      possibleStudents: [],
+      studentsToAdd: [],
+      lectures: this.$root.$data.currentClass.lectures,
+      presentLectures: 0,
+      lectureDate: moment(this.lectureDate).format('MM/DD/YYYY'),
+      startTime: {
+        HH: '00',
+        mm: '00',
+      },
+      endTime: {
+        HH: '01',
+        mm: '00',
+      }
     }
   },
   created() {
@@ -40,40 +88,27 @@ export default {
     async addStudents() {
       try {
         let time = Date.now();
-        // TODO: Add functionality to add students
-        let emailList = prompt("Please enter a list of students' names separated by commas", "email@example.com, example@email.com");
-        if (emailList === "email@example.com, example@email.com") {
+        if(!this.studentsToAdd || !this.classroom) {
           return;
         }
-        // var emailArr = emailList.split(',');
-        
-        console.log(this.$root.$data.user);
-        // for(var email in emailArr){
-          let response = await axios.post('/api/[api call for adding student]/', {
-            email: emailList//emailArr[email],
-            // professor: this.$root.$data.user,
-          });
-          this.$root.$data.user = response.data.user;
-          console.log("Add Students to Class: " + (Date.now()-time)/1000);
-        // }
-        console.log("Add Students: " + (Date.now()-time)/1000);
-      } catch (error) {
-        console.log("Add Students Failure" + error);
-      }
-    },
-    async getStudents(studentID) {
-      try {
-        let time = Date.now();
-        // TODO: Add functionality to get all students
-        console.log(studentID);
-        let response = await axios.post('/api/[api call for getting students]/', {
-          studentID: studentID,
+        let response = await axios.post('/api/classes/addStudents', {
+          students: this.studentsToAdd,
+          classroom: this.classroom,
         });
         this.$root.$data.currentClass = response.data.queriedClass;
-        // await this.$router.push({path: 'classroom'});
+        console.log("Add Students to Class: " + (Date.now()-time)/1000);
+      } catch (error) {
+        console.log("Add Students Failure:" + error);
+      }
+    },
+    async getStudents() {
+      try {
+        let time = Date.now();
+        let response = await axios.post('/api/users/students');
+        this.possibleStudents = response.data.possibleStudents;
         console.log("Get Students: " + (Date.now()-time)/1000);
       } catch (error) {
-        console.log("Get Students Failure" + error);
+        console.log("Get Students Failure:" + error);
       }
     },
     async goBack() {
@@ -82,10 +117,82 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    async createLecture() {
+      try {
+        let date = new Date(this.lectureDate.toString());
+        console.log(date);
+
+        let startTime = date.setHours(this.startTime.HH, this.startTime.mm);
+        let endTime = date.setHours(this.endTime.HH, this.endTime.mm);
+
+        let time = Date.now();
+        if(!startTime || !this.classroom || !endTime) {
+          return;
+        }
+        let response = await axios.post('/api/classes/lecture', {
+          classroom: this.classroom,
+          startTime: startTime,
+          endTime: endTime,
+        });
+        this.$root.$data.currentClass = response.data.queriedClass;
+        let code = response.data.code;
+        console.log("Create Lecture: " + (Date.now()-time)/1000);
+        window.alert(code.toString());
+      } catch (error) {
+        console.log("Create Lecture Failure:" + error);
+      }
+    },
+    async attendLecture() {
+      try {
+        let code = prompt("Please enter your lecture code", "Fake Code: 4356");
+        let time = Date.now();
+        if(code === 'Fake Code: 4356' || !this.classroom._id || !this.$root.$data.user._id) {
+          return;
+        }
+        let response = await axios.post('/api/classes/addAttendance', {
+          classID: this.classroom._id,
+          code: code,
+          studentID: this.$root.$data.user._id,
+        });
+        this.$root.$data.user = response.data.student;
+        console.log("Get Students: " + (Date.now()-time)/1000);
+      } catch (error) {
+        console.log("Get Students Failure:" + error);
+      }
+    },
+    async isPresent() {
+      let totalLectures = this.lectures.length;
+      let presentLectures = 0;
+      if (this.type === "student" && totalLectures > 0) {
+        try {
+          for (let i = 0; i < totalLectures; i++) {
+            if(this.lectures[i].code) {
+              let found = this.$root.$data.user.attendances.find(this.lectures[i].code);
+              if(found) {
+                this.lectures.present = 1;
+                presentLectures += 1;
+              }
+              else {
+                this.lectures.present = 0;
+              }
+            }
+          }
+        } catch (error) {
+          console.log("Attendance Calculation Error:" + error);
+        }
+      }
+      this.presentLectures = presentLectures;
+    },
+    moment(time) {
+      return moment(time).format('MMMM DD YYYY, h:mm a');
     }
   },
 }
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style src="vue2-timepicker/dist/VueTimepicker.css"></style>
 
 <style scoped>
 .title, .studentList{
@@ -120,6 +227,10 @@ export default {
 .studentBox:hover {
   transform: scale(1.1);
   transition-duration: 100ms;
+}
+.selector {
+  width: 70%;
+  margin: 10px;
 }
 
 </style>
