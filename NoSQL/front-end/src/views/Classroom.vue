@@ -10,6 +10,8 @@
           <p>{{item.name}}</p>
           <p>{{item.email}}</p>
           <button type="submit" class="pure-button pure-button-primary" @click.prevent="downloadStudentReport(item._id)">Download Attendance</button>
+          <br>
+          <button class="pure-button pure-button-primary" @click="removeStudent(item)">Remove From Class</button>
           <!--<p>Lectures Present: {{item.attendances.length}}/{{lectures.length}} ({{(item.attendances.length/lectures.length)*100}}%)</p>-->
         </div>
       </div>
@@ -212,6 +214,27 @@ export default {
     },
     moment(time) {
       return moment(time).format('MMMM DD YYYY, h:mm a');
+    },
+    async removeStudent(student) {
+      console.log(student)
+      console.log(this.classroom)
+
+      const resp = await axios.delete(`api/classes/enrollment/${this.classroom._id}/${student._id}`)
+      console.log(resp)
+      
+      if(resp.status === 200) {
+        const list = [...this.students]
+        const newArr = []
+
+        list.forEach(s => {
+          if(s._id != student._id) 
+            newArr.push({...s})
+        })
+
+        this.students = newArr
+      }
+
+
     }
   },
 }
