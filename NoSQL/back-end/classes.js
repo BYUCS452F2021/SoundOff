@@ -268,6 +268,35 @@ router.post('/addAttendance', async (req, res) => {
     }
     });
 
+router.delete('/enrollment/:classid/:studentid', async (req, res) => {
+    try {
+        const c = await Class.findOne({_id: req.params.classid}).populate('class')
+
+        if(c) {
+            console.log(c.students)
+            const students = [...c.students]
+            const arr = []
+
+            students.forEach(s => {
+                if(s._id != req.params.studentid)
+                    arr.push(s)
+            })
+
+            c.students = arr
+            await c.save()
+            res.sendStatus(200)
+        }
+
+        else {
+            res.sendStatus(400, 'Class not found')
+        }
+    }
+    catch(err) {
+        res.sendStatus(400, err)
+    }
+    
+})
+
 
 module.exports = {
     routes: router,
