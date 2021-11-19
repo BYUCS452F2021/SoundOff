@@ -1,6 +1,6 @@
 <template>
   <div class="text-area-container">
-      <input v-model="text" />
+      <input :type="hidden ? 'password' : ''"  v-model="text" />
       <span>{{label}}</span>
   </div>
 </template>
@@ -8,7 +8,7 @@
 <script>
 export default {
     name: 'TextField',
-    props: ['value', 'label'],
+    props: ['value', 'label', 'hidden'],
     data() {
         return {
             text: ''

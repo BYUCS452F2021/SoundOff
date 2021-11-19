@@ -8,7 +8,7 @@
         <TextField v-model="password" label="Password"></TextField>
         <br v-if="showSignUp">
         <div class="row-flex" v-if="showSignUp"> 
-          <TextField v-model="name" label="Name"></TextField>
+          <TextField :hidden="true" v-model="name" label="Name"></TextField>
           <div style="width: 16px" ></div>
           <vue-single-select
               v-model="type"
