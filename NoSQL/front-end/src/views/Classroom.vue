@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 100%">
     <div class="title">
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="goBack">&laquo; Previous</button>
       <h1>{{classroom.name}}</h1>
