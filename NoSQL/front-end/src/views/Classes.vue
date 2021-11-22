@@ -18,21 +18,46 @@ export default {
   name: "Classes",
   data() {
     return {
-      type: this.$root.$data.user.accountType,
-      classes: this.$root.$data.user.classes,
+    }
+  },
+  computed: {
+    user() {
+      if(this.$root.$data.user) {
+        return this.$root.$data.user
+      }
+      else if (localStorage['user']) {
+        const u = JSON.parse(localStorage['user']) 
+        return u
+      }
+      else {
+        return {
+          accountType: 'anon'
+        }
+      }
+    },
+    classes() {
+      if(this.$root.$data.user) {
+        return this.$root.$data.user.classes
+      }
+      else if (localStorage['user']) {
+        const u = JSON.parse(localStorage['user']) 
+        return u.classes
+      }
+
+      return []
     }
   },
   methods: {
     async addClass() {
       try {
         let className = prompt("Please enter your class name", "Fake Class 101 - Section 003");
-        if (className === null || className === "" || className === "Fake Class 101 - Section 003" || this.type !== 'professor') {
+        if (className === null || className === "" || className === "Fake Class 101 - Section 003" || this.user.accountType !== 'professor') {
           return;
         }
         let time = Date.now();
         let response = await axios.post('/api/classes/', {
           name: className,
-          professor: this.$root.$data.user,
+          professor: this.user,
         });
         this.$root.$data.user = response.data.user;
         console.log("Add Class: " + (Date.now()-time)/1000);
@@ -47,6 +72,7 @@ export default {
           classId: classID,
         });
         this.$root.$data.currentClass = response.data.queriedClass;
+        localStorage['currentClass'] = JSON.stringify(response.data.queriedClass)
         console.log("Get Class: " + (Date.now()-time)/1000);
         await this.$router.push("/classroom");
       } catch (error) {
