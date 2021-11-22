@@ -29,6 +29,7 @@ export default {
         let time = Date.now();
         await axios.delete("/api/users");
         this.$root.$data.user = null;
+        localStorage.clear()
         console.log("Logout: " + (Date.now()-time)/1000);
       } catch (error) {
         this.$root.$data.user = null;

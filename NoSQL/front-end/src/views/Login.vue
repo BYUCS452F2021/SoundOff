@@ -8,7 +8,7 @@
         <TextField v-model="password" label="Password"></TextField>
         <br v-if="showSignUp">
         <div class="row-flex" v-if="showSignUp"> 
-          <TextField v-model="name" label="Name"></TextField>
+          <TextField :hidden="true" v-model="name" label="Name"></TextField>
           <div style="width: 16px" ></div>
           <vue-single-select
               v-model="type"
@@ -91,6 +91,7 @@ export default {
         });
         this.$root.$data.user = response.data.user;
         console.log("Login: " + (Date.now()-time)/1000);
+        localStorage['user'] = JSON.stringify(response.data.user)
         await this.$router.push({path: 'classes'});
       } catch (error) {
         this.errorLogin = "Error: " + error.response.data.message;
