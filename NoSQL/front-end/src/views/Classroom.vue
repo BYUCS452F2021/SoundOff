@@ -1,15 +1,17 @@
 <template>
-  <div>
+  <div style="width: 100%">
     <div class="title">
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="goBack">&laquo; Previous</button>
       <h1>{{classroom.name}}</h1>
     </div>
     <div class="studentList">
-      <div v-if="students.length>0 && type==='professor'" class="studentList">
+      <div v-if="students.length>0 && user.accountType==='professor'" class="studentList">
         <div v-for="item in students" v-bind:key="item.id" class="studentBox">
           <p>{{item.name}}</p>
           <p>{{item.email}}</p>
           <button type="submit" class="pure-button pure-button-primary" @click.prevent="downloadStudentReport(item._id)">Download Attendance</button>
+          <br>
+          <button class="pure-button pure-button-primary" @click="removeStudent(item)">Remove From Class</button>
           <!--<p>Lectures Present: {{item.attendances.length}}/{{lectures.length}} ({{(item.attendances.length/lectures.length)*100}}%)</p>-->
         </div>
       </div>
@@ -17,17 +19,17 @@
         <p>No Students</p>
       </div>
     </div>
-    <div v-if="type==='professor'" class="addStudents">
+    <div v-if="user.accountType==='professor'" class="addStudents">
       <multiselect id="multi" class="selector" v-model="studentsToAdd" :options="possibleStudents" placeholder="Select Students" label="email" track-by="id" :multiple="true" :clear-on-select="false" :close-on-select="false"></multiselect>
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="addStudents">Add Students</button>
     </div>
 
     <div class="LectureList">
-      <p v-if="type==='student'">Lectures Present: {{presentLectures}}/{{lectures.length}} ({{(presentLectures/lectures.length)*100}}%)</p>
+      <p v-if="user.accountType==='student'">Lectures Present: {{presentLectures}}/{{lectures.length}} ({{(presentLectures/lectures.length)*100}}%)</p>
       <div v-if="lectures.length>0" class="studentList">
         <div v-for="item in lectures" v-bind:key="item.code" class="studentBox">
           <p>{{moment(item.startTime)}} - {{moment(item.endTime)}}</p>
-          <p v-if="type==='professor'">Code: {{item.code}}</p>
+          <p v-if="user.accountType==='professor'">Code: {{item.code}}</p>
         </div>
       </div>
       <div v-else>
@@ -35,14 +37,14 @@
       </div>
     </div>
 
-    <div v-if="type==='professor'" class="addStudents">
+    <div v-if="user.accountType==='professor'" class="addStudents">
       <Datepicker class="dateBox" placeholder="Select a Lecture Date" v-model="lectureDate"></Datepicker>
       <vue-timepicker placeholder="Start Time" v-model="startTime"></vue-timepicker>
       <vue-timepicker placeholder="End Time" v-model="endTime"></vue-timepicker>
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="createLecture">Create Lecture</button>
     </div>
 
-    <div v-if="type==='student'" class="addStudents">
+    <div v-if="user.accountType==='student'" class="addStudents">
       <button type="submit" class="pure-button pure-button-primary" @click.prevent="attendLecture">Attend Lecture</button>
     </div>
   </div>
@@ -65,13 +67,8 @@ export default {
   },
   data() {
     return {
-      type: this.$root.$data.user.accountType,
-      classroom: this.$root.$data.currentClass,
-      students: this.$root.$data.currentClass.students,
       possibleStudents: [],
       studentsToAdd: [],
-      lectures: this.$root.$data.currentClass.lectures,
-      presentLectures: this.$root.$data.user.attendances.length,
       lectureDate: moment(this.lectureDate).format('MM/DD/YYYY'),
       startTime: {
         HH: '00',
@@ -85,6 +82,59 @@ export default {
   },
   created() {
     this.getStudents();
+  },
+  computed: {
+    user() {
+      if(this.$root.$data.user) {
+        return this.$root.$data.user
+      }
+      else if (localStorage['user']) {
+        return JSON.parse(localStorage['user'])
+      }
+      
+      return {}
+    },
+    classroom() {
+      if(this.$root.$data.currentClass) {
+        return this.$root.$data.currentClass
+      }
+      else if(localStorage['currentClass']) {
+        return JSON.parse(localStorage['currentClass'])
+      } 
+
+      return {}
+    },
+    students() {
+      if(this.$root.$data.currentClass) {
+        return this.$root.$data.currentClass.students
+      }
+      else if(localStorage['currentClass']) {
+        return JSON.parse(localStorage['currentClass']).students
+      }
+
+      return []
+    },
+    lectures() {
+      if(this.$root.$data.currentClass) {
+        return this.$root.$data.currentClass.lectures
+      }
+      else if(localStorage['currentClass']) {
+        return JSON.parse(localStorage['currentClass']).lectures
+      }
+      
+      return []
+    },
+    presentLectures() {
+      if(this.$root.$data.user) {
+        return this.$root.$data.user.attendances.length
+      }
+      else if (localStorage['user']) {
+        return JSON.parse(localStorage['user']).attendances.length
+      }
+      
+      return []
+
+    }
   },
   methods: {
     async addStudents() {
@@ -212,6 +262,22 @@ export default {
     },
     moment(time) {
       return moment(time).format('MMMM DD YYYY, h:mm a');
+    },
+    async removeStudent(student) {
+
+      const resp = await axios.delete(`api/classes/enrollment/${this.classroom._id}/${student._id}`)
+      
+      if(resp.status === 200) {
+        const list = [...this.students]
+        const newArr = []
+
+        list.forEach(s => {
+          if(s._id != student._id) 
+            newArr.push({...s})
+        })
+
+        this.students = newArr
+      }
     }
   },
 }
