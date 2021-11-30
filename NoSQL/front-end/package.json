@@ -10,6 +10,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "express": "^4.17.1",
+    "jspdf": "^2.4.0",
     "moment": "^2.29.1",
     "vue": "^2.6.11",
     "vue-multi-select": "^4.6.0",

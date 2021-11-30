@@ -55,6 +55,7 @@ import Multiselect from 'vue-multiselect';
 import Datepicker from 'vuejs-datepicker';
 import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
+import { jsPDF } from "jspdf";
 
 export default {
   name: "Classroom.vue",
@@ -157,6 +158,7 @@ export default {
           code: code,
           studentID: this.$root.$data.user._id,
         });
+        console.log(response);
         this.$root.$data.user = response.data.student;
         console.log("Attend Lecture: " + (Date.now()-time)/1000);
       } catch (error) {
@@ -167,21 +169,29 @@ export default {
       try {
         let time = Date.now();
         let attendance = 0;
+        let attendanceInfo = {};
+        let classesAttended = [];
 
         // TODO: Calculate a student's attendance (needs to be called by downloadStudentReport and classAttendanceReport)
-        for(let student in this.possibleStudents) {
-          if(student._id === id) {
-            for(let item in student.attendances) {
-              for(let lecture in this.lectures) {
-                if(item.code === lecture.code) {
+        attendanceInfo.class = this.classroom.name;
+        for(let i in this.possibleStudents) {
+          if(this.possibleStudents[i]._id === id) {
+            attendanceInfo.name = this.possibleStudents[i].name;
+            attendanceInfo.email = this.possibleStudents[i].email;
+            for(let item in this.possibleStudents[i].attendances) {
+              for(let j in this.lectures) {
+                if(item.code === this.lectures[j].code) {//doesn't check for time, not sure if we want to do that
                   attendance = attendance + 1;
+                  classesAttended.push(new Date(this.lectures[j].startTime));
                 }
               }
             }
           }
         }
+        attendanceInfo.classesAttended = classesAttended;
+        attendanceInfo.attendance = attendance;
         console.log("Attendance Calculated: " + (Date.now()-time)/1000);
-        return attendance;
+        return attendanceInfo;
       } catch (error) {
         console.log("Attendance Calculation Error: " + error);
       }
@@ -190,9 +200,24 @@ export default {
       try {
         let time = Date.now();
 
-        let attendance = await this.isPresent(id);
+        let attendanceInfo = await this.isPresent(id);
         // TODO: download a student's attendance report
-        console.log(id + " Attendance: " + attendance);
+        console.log(id + " Attendance: " + attendanceInfo.attendance);
+
+        var doc = new jsPDF();
+
+        var pdfStream = "";
+        pdfStream += attendanceInfo.class + "\n\n" + attendanceInfo.name + "\n\n\t classes attended";
+        for(var lecture in attendanceInfo.classesAttended){
+          pdfStream += "\t\t" + lecture + "\n";
+        }
+        if(attendanceInfo.classesAttended.length <= 0){
+          pdfStream += "\n\t\tThis student has not attended any lectures for this class.\n";
+        }
+        pdfStream += "\n\tTotal attendances: " + attendanceInfo.attendance + "\n";
+        
+        doc.text(pdfStream, 10, 10);
+        doc.save(attendanceInfo.class + '_' + attendanceInfo.name + '.pdf');
 
         console.log("Download Student Attendance Report: " + (Date.now()-time)/1000);
       } catch (error) {
