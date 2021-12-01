@@ -205,11 +205,13 @@ export default {
         if(code === 'Fake Code: 4356' || !this.classroom._id || !this.$root.$data.user._id) {
           return;
         }
-        let response = await axios.post('/api/classes/addAttendance', {
+        let data = await {
           classID: this.classroom._id,
           code: code,
           studentID: this.$root.$data.user._id,
-        });
+        };
+
+        let response = await axios.post('/api/classes/addAttendance', data);
         console.log(response);
         this.$root.$data.user = response.data.student;
         console.log("Attend Lecture: " + (Date.now()-time)/1000);
@@ -230,11 +232,12 @@ export default {
           if(this.possibleStudents[i]._id === id) {
             attendanceInfo.name = this.possibleStudents[i].name;
             attendanceInfo.email = this.possibleStudents[i].email;
-            for(let item in this.possibleStudents[i].attendances) {
-              for(let j in this.lectures) {
-                if(item.code === this.lectures[j].code) {//doesn't check for time, not sure if we want to do that
+            for(let j in this.possibleStudents[i].attendances) {
+              for(let k in this.lectures) {
+                if(this.possibleStudents[i].attendances[j].code === this.lectures[k].code) {//doesn't check for time, not sure if we want to do that
                   attendance = attendance + 1;
-                  classesAttended.push(new Date(this.lectures[j].startTime));
+                  console.log(new Date(this.lectures[k].startTime));
+                  classesAttended.push(new Date(this.lectures[k].startTime));
                 }
               }
             }
@@ -259,9 +262,10 @@ export default {
         var doc = new jsPDF();
 
         var pdfStream = "";
-        pdfStream += attendanceInfo.class + "\n\n" + attendanceInfo.name + "\n\n\t Classes attended:";
-        for(var lecture in attendanceInfo.classesAttended){
-          pdfStream += "\t\t" + lecture + "\n";
+        pdfStream += attendanceInfo.class + "\n\n" + attendanceInfo.name + " --- " + 
+                      attendanceInfo.email + "\n\n\t Classes attended:";
+        for(var i in attendanceInfo.classesAttended){
+          pdfStream += "\n\t\t" + attendanceInfo.classesAttended[i].toString() + "\n";
         }
         if(attendanceInfo.classesAttended.length <= 0){
           pdfStream += "\n\t\tThis student has not attended any lectures for this class.\n";
@@ -285,14 +289,23 @@ export default {
         var pdfStream = "";
 
         pdfStream += this.classroom.name + "\n\n"
-        console.log("AHHHHHHHHH");
-        console.log(this.possibleStudents);
         for(let i in this.possibleStudents) {
+          var isEnrolled = false;
+          for(j in this.possibleStudents[i].classes){
+            if(this.possibleStudents[i].classes[j].id == this.classroom._id){
+              isEnrolled = true;
+            }
+          }
+          if(!isEnrolled){
+            continue;
+          }
+          
           let attendanceInfo = await this.isPresent(this.possibleStudents[i]._id);
 
-           pdfStream += attendanceInfo.name + "\n\n\t Classes attended:";
-          for(var lecture in attendanceInfo.classesAttended){
-            pdfStream += "\t\t" + lecture + "\n";
+           pdfStream += attendanceInfo.name  + " --- " + 
+                          attendanceInfo.email + "\n\n\t Classes attended:";
+          for(var j in attendanceInfo.classesAttended){
+          pdfStream += "\n\t\t" + attendanceInfo.classesAttended[j].toString() + "\n";
           }
           if(attendanceInfo.classesAttended.length <= 0){
             pdfStream += "\n\t\tThis student has not attended any lectures for this class.\n";

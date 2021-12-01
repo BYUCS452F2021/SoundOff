@@ -227,16 +227,17 @@ router.post('/lecture', async (req, res) => {
 });
 
 router.post('/addAttendance', async (req, res) => {
-    const curTime = Date.now();
-    let matchingLecture = null;
-    // Make sure that the form coming from the browser includes all required fields,
-    // otherwise return an error. A 400 error means the request was
-    // malformed.
-    if (!req.body.classID || !req.body.code || !req.body.studentID )
-        return res.status(400).send({
-            message: "A Class id, Student ID, start time and an end time are required"
-        });
     try {
+        const curTime = Date.now();
+        let matchingLecture = null;
+        // Make sure that the form coming from the browser includes all required fields,
+        // otherwise return an error. A 400 error means the request was
+        // malformed.
+        if (!req.body.classID || !req.body.code || !req.body.studentID )
+            return res.status(400).send({
+                message: "A Class id, Student ID, start time and an end time are required"
+            });
+            
         let lecturesClass = await Class.findOne({_id: req.body.classID }).populate('class');
         if(!lecturesClass) {
             return res.sendStatus(404).send({ message: "Error: Class not found" });
