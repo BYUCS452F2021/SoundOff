@@ -1,14 +1,16 @@
 <template>
   <div id="app">
     <header id="header">
+      <h2>Sound Off</h2>
       <div>
         <router-link to="/">
-          <p v-if="user" @click="logout">Logout<br>{{user.email}}</p>
-          <p v-else>Sign Up / Login</p>
+          {{user ? 'Sign Out' : 'Home'}}
         </router-link>
       </div>
     </header>
-    <router-view />
+    <div id="router-container">
+      <router-view />
+    </div>
   </div>
 </template>
 
@@ -27,6 +29,7 @@ export default {
         let time = Date.now();
         await axios.delete("/api/users");
         this.$root.$data.user = null;
+        localStorage.clear()
         console.log("Logout: " + (Date.now()-time)/1000);
       } catch (error) {
         this.$root.$data.user = null;
@@ -51,21 +54,42 @@ body {
   font-family: 'Work Sans', sans-serif;
   font-weight: 300;
   font-size: 13pt;
-  background-color: darkgrey;
 }
 #header{
   display: flex;
-  background-color: azure;
-  width: 100%;
-  height: 100px;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: baseline;
-  padding-top: 20px;
+  width: 100vw;  
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #444;
+  color: white;
 }
 
-#header a:hover {
-  background-color: steelblue;
+#header h2 {
+  margin: 0px;
+}
+
+#header a {
+  color: deepskyblue;
+  text-decoration: none;
+}
+
+#app {
+  display: flex;
+  min-width: 100vw;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#router-container {
+  max-width: 1200px;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 

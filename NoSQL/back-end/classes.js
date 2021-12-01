@@ -143,7 +143,11 @@ router.post('/addStudents', async (req, res) => {
             }).populate('user');
            if(user) {
                // only add the student to the class if it doesn't exist in the student list
-               if((!await currentClass.students.includes({_id: user._id}))){ // TODO: Fix this so that the students are not added more than once.
+               let arrayOfStudentIDs = [];
+               for (let curStudent of await currentClass.students) {
+                   arrayOfStudentIDs.push(curStudent.email);
+               }
+               if(!await arrayOfStudentIDs.includes(user.email)){
                    // Update the class' student list to include the user
                    await currentClass.students.push({
                        _id: user._id,
@@ -156,6 +160,11 @@ router.post('/addStudents', async (req, res) => {
                        name: currentClass.name
                    });
                    await user.save();
+               }
+               else {
+                   return res.status(400).send( {
+                       message: "Student already in class"
+                   })
                }
            } else {
                // Make sure that the form coming from the browser includes all required fields,
@@ -267,6 +276,35 @@ router.post('/addAttendance', async (req, res) => {
         return res.sendStatus(500);
     }
     });
+
+router.delete('/enrollment/:classid/:studentid', async (req, res) => {
+    try {
+        const c = await Class.findOne({_id: req.params.classid}).populate('class')
+
+        if(c) {
+            console.log(c.students)
+            const students = [...c.students]
+            const arr = []
+
+            students.forEach(s => {
+                if(s._id != req.params.studentid)
+                    arr.push(s)
+            })
+
+            c.students = arr
+            await c.save()
+            res.sendStatus(200)
+        }
+
+        else {
+            res.sendStatus(400, 'Class not found')
+        }
+    }
+    catch(err) {
+        res.sendStatus(400, err)
+    }
+    
+})
 
 
 module.exports = {
