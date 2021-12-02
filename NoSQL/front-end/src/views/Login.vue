@@ -5,14 +5,14 @@
       <div slot="body" class="col-flex">
         <TextField v-model="email" label="Email"></TextField>
         <br>
-        <TextField v-model="password" label="Password"></TextField>
+        <TextField :hidden="true"  v-model="password" label="Password"></TextField>
         <br v-if="showSignUp">
         <div class="row-flex" v-if="showSignUp"> 
-          <TextField :hidden="true" v-model="name" label="Name"></TextField>
+          <TextField v-model="name" label="Name"></TextField>
           <div style="width: 16px" ></div>
           <vue-single-select
               v-model="type"
-              :options="['Student','Professor']"
+              :options="['student','professor']"
               placeholder="Role"
           ></vue-single-select>
         </div>
