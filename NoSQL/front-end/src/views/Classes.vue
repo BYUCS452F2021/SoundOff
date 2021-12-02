@@ -3,7 +3,7 @@
     <h1 style="padding-top: 24px">Classes</h1>
     <div class="classList">
       <div v-for="item in classes" v-bind:key="item.id" v-on:click="getClass(item.id)" class="classBox">{{item.name}}</div>
-      <div class="classBox"  @click="addClass">New Class</div>
+      <div v-if="user.accountType !=='student'" class="classBox"  @click="addClass"> New Class</div>
     </div>
     <div v-if="classes.length == 0">No Classes</div>
 
