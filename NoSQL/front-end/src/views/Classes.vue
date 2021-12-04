@@ -5,7 +5,7 @@
       <div v-for="item in classes" v-bind:key="item.id" v-on:click="getClass(item.id)" class="classBox">{{item.name}}</div>
       <div class="classBox"  @click="addClass">New Class</div>
     </div>
-    <div v-if="classes.length == 0">No Classes</div>
+    <div v-if="classes.length === 0">No Classes</div>
 
   </div>
 </template>
